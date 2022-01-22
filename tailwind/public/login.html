@@ -76,75 +76,28 @@
       </div>
     </nav>
     <main>
-      <div
-        class="relative pt-16 pb-32 flex content-center items-center justify-center"
-        style="min-height: 45vh;"
-      >
         <div
-          class="absolute top-0 w-full h-full bg-center bg-cover"
-          style="background-image: url('img/office.jpg');"
+          class="relative pt-16 pb-32 flex content-center items-center justify-center"
+          style="min-height: 45vh;"
         >
-          <span
-            id="blackOverlay"
-            class="w-full h-full absolute bg-black"
-            style="opacity: 75%"
-          ></span>
-        </div>
-        
-        <div class="w-full lg:w-6/12 px-4"></div>
-             
+          <div
+            class="absolute top-0 w-full h-full bg-center bg-cover"
+            style="background-image: url('img/office.jpg');"
+          >
+            <span
+              id="blackOverlay"
+              class="w-full h-full absolute bg-black"
+              style="opacity: 75%"
+            ></span>
+          </div>
+          
+          <div class="w-full lg:w-6/12 px-4">
+
+          </div>
+              
         </div>
 
-        <div class="container mx-auto pt-4 pt-20 flex content-center items-center justify-center">
-          <div class="flex flex-wrap justify-center lg:-mt-64 -mt-48">
-            <div class="w-full lg:w-6/12 px-4">
-              <div
-                class="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-gray-300"
-              >
-              <div class="flex-auto p-10 lg:p-20">
-                <h4 class="text-2xl font-semibold">Effettua l'accesso</h4>
-                <p class="leading-relaxed mt-1 mb-4 text-gray-600">
-                  Esegui l'accesso con le credenziali del tuo profilo 
-                  o se ancora non ce l'hai creane uno.
-                </p>
-                <div class="relative w-full mb-3 mt-8">
-                  <label
-                    class="block uppercase text-gray-700 text-xs font-bold mb-2"
-                    for="full-name"
-                    >Nome utente</label
-                  ><input
-                    type="text"
-                    class="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
-                    placeholder="Nome utente"
-                    style="transition: all 0.15s ease 0s;"
-                  />
-                </div>
-                <div class="relative w-full mb-3">
-                  <label
-                    class="block uppercase text-gray-700 text-xs font-bold mb-2"
-                    for="email"
-                    >Password</label
-                  ><input
-                    type="password"
-                    class="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
-                    placeholder="password"
-                    style="transition: all 0.15s ease 0s;"
-                  />
-                </div>
-                <div class="text-center mt-6">
-                  <button
-                    class="bg-gray-900 text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
-                    type="button"
-                    style="transition: all 0.15s ease 0s;"
-                  >
-                    Accedi
-                  </button>
-                </div>
-              </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        
 
 
         <div
@@ -167,14 +120,61 @@
           </polygon>
           </svg>
         </div>
-      </div>
-      <section class="pb-20 bg-gray-300 -mt-24">
-
-      </section>
-      
-      
-      
     </main>
+
+
+    
+    <div class="container  mx-auto pt-4 pt-20 flex content-center items-center justify-center">
+      <div class="w-full flex flex-wrap justify-center lg:-mt-64 -mt-48">
+        <div class="w-full lg:w-6/12 px-4">
+          <div
+            class="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-gray-300"
+          >
+            <div class="flex-auto p-10 lg:p-20">
+              <h4 class="text-2xl font-semibold">Effettua l'accesso</h4>
+              <p class="leading-relaxed mt-1 mb-4 text-gray-600">
+                Esegui l'accesso con le credenziali del tuo profilo 
+                o se ancora non ce l'hai creane uno.
+              </p>
+              <div class="relative w-full mb-3 mt-8">
+                <label
+                  class="block uppercase text-gray-700 text-xs font-bold mb-2"
+                  for="full-name"
+                  >Nome utente</label
+                ><input
+                  type="text"
+                  class="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
+                  placeholder="Nome utente"
+                  style="transition: all 0.15s ease 0s;"
+                />
+              </div>
+              <div class="relative w-full mb-3">
+                <label
+                  class="block uppercase text-gray-700 text-xs font-bold mb-2"
+                  for="email"
+                  >Password</label
+                ><input
+                  type="password"
+                  class="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
+                  placeholder="password"
+                  style="transition: all 0.15s ease 0s;"
+                />
+              </div>
+              <div class="text-center mt-6">
+                <button
+                  class="bg-gray-900 text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+                  type="button"
+                  style="transition: all 0.15s ease 0s;"
+                >
+                  Accedi
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <footer class="relative bg-gray-300 pt-8 pb-6">
       <div
         class="bottom-auto top-0 left-0 right-0 w-full absolute pointer-events-none overflow-hidden -mt-20"
