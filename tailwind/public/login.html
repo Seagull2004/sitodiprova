@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Effettua il log in</title>
+    <link rel="icon" href="img/icona-890x890.png"> 
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <link 
+      rel="stylesheet" 
+      href="style/styles.css"
+    />
+  </head>
+  <body class="text-gray-800 antialiased">
+    <nav
+      class="top-0 absolute z-50 w-full flex flex-wrap items-center justify-between px-2 py-3 "
+    >
+      <div
+        class="container px-4 mx-auto flex flex-wrap items-center justify-between"
+      >
+        <div
+          class="w-full relative flex justify-between lg:w-auto lg:static lg:block lg:justify-start"
+        >
+          <a href="home.html">
+            <img 
+              src="img/logoW-1800x1800.png" 
+              alt="logo" 
+              style="width: 100px"
+              class="hover:shadow-lg transition ease-out duration-300">
+          </a>
+          
+      <button
+            class="cursor-pointer text-xl leading-none px-3 py-1 border border-solid border-transparent rounded bg-transparent block lg:hidden outline-none focus:outline-none"
+            type="button"
+            onclick="toggleNavbar('example-collapse-navbar')"
+          >
+            <i class="text-white fas fa-bars"></i>
+          </button>
+        </div>
+        <div
+          class="lg:flex flex-grow items-center bg-white lg:bg-transparent lg:shadow-none hidden"
+          id="example-collapse-navbar"
+        >
+          
+          <ul class="flex flex-col lg:flex-row list-none lg:ml-auto">
+
+            <li class="flex items-center">
+              <a href="login.html">
+                <button
+                class="btn bg-white text-gray-800 active:bg-gray-100 text-xs font-bold uppercase px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none lg:mr-1 lg:mb-0 ml-3 mb-3"
+                type="button"
+                style="transition: all 0.15s ease 0s;"
+                >
+                  Log in
+                </button>
+              </a>
+            </li>
+
+            <li class="flex items-center">
+              <a href="#">
+                <button
+                class="btn bg-white text-gray-800 active:bg-gray-100 text-xs font-bold uppercase px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none lg:mr-1 lg:mb-0 ml-3 mb-3"
+                type="button"
+                style="transition: all 0.15s ease 0s;"
+                >
+                  Sign up
+                </button>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <main>
+      <div
+        class="relative pt-16 pb-32 flex content-center items-center justify-center"
+        style="min-height: 45vh;"
+      >
+        <div
+          class="absolute top-0 w-full h-full bg-center bg-cover"
+          style="background-image: url('img/office.jpg');"
+        >
+          <span
+            id="blackOverlay"
+            class="w-full h-full absolute bg-black"
+            style="opacity: 75%"
+          ></span>
+        </div>
+
+
+        <div class="container mx-auto px-4 pt-20 flex content-center items-center justify-center">
+          <div class="flex flex-wrap">
+              <div
+                class="relative flex flex-col break-words bg-white w-full mb-8 shadow-lg rounded-lg"
+                style="width: 120vh;"
+              >
+                <div class="flex-auto p-10 lg:p-20">
+                  <h4 class="text-2xl font-semibold">Effettua l'accesso</h4>
+                  <p class="leading-relaxed mt-1 mb-4 text-gray-600">
+                    Esegui l'accesso con le credenziali del tuo profilo 
+                    o se ancora non ce l'hai creane uno.
+                  </p>
+                  <div class="relative w-full mb-3 mt-8">
+                    <label
+                      class="block uppercase text-gray-700 text-xs font-bold mb-2"
+                      for="full-name"
+                      >Nome utente</label
+                    ><input
+                      type="text"
+                      class="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
+                      placeholder="Nome utente"
+                      style="transition: all 0.15s ease 0s;"
+                    />
+                  </div>
+                  <div class="relative w-full mb-3">
+                    <label
+                      class="block uppercase text-gray-700 text-xs font-bold mb-2"
+                      for="email"
+                      >Password</label
+                    ><input
+                      type="password"
+                      class="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
+                      placeholder="password"
+                      style="transition: all 0.15s ease 0s;"
+                    />
+                  </div>
+                  <div class="text-center mt-6">
+                    <button
+                      class="bg-gray-900 text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+                      type="button"
+                      style="transition: all 0.15s ease 0s;"
+                    >
+                      Accedi
+                    </button>
+                  </div>
+                </div>
+              </div>
+          </div>
+        </div>
+
+
+        <div
+          class="top-auto bottom-0 left-0 right-0 w-full absolute pointer-events-none overflow-hidden"
+          style="height: 70px;"
+        >
+          <svg
+            class="absolute bottom-0 overflow-hidden"
+            xmlns="http://www.w3.org/2000/svg"
+            preserveaspectratio="none"
+            version="1.1"
+            viewbox="0 0 2560 100"
+            x="0"
+            y="0"
+          >
+            <polygon
+              class="text-gray-300 fill-current"
+              points="2560 0 2560 100 0 100"
+            >
+          </polygon>
+          </svg>
+        </div>
+      </div>
+      <section class="pb-20 bg-gray-300 -mt-24">
+
+      </section>
+      
+      
+      
+    </main>
+    <footer class="relative bg-gray-300 pt-8 pb-6">
+      <div
+        class="bottom-auto top-0 left-0 right-0 w-full absolute pointer-events-none overflow-hidden -mt-20"
+        style="height: 80px;"
+      >
+        <svg
+          class="absolute bottom-0 overflow-hidden"
+          xmlns="http://www.w3.org/2000/svg"
+          preserveaspectratio="none"
+          version="1.1"
+          viewbox="0 0 2560 100"
+          x="0"
+          y="0"
+        >
+          <polygon
+            class="text-gray-300 fill-current"
+            points="2560 0 2560 100 0 100"
+          ></polygon>
+        </svg>
+      </div>
+      <div class="container mx-auto px-4">
+        <hr class="my-6 border-gray-400" />
+        <div
+          class="flex flex-wrap items-center md:justify-between justify-center"
+        >
+          <div class="w-full md:w-4/12 px-4 mx-auto text-center">
+            <div class="text-sm text-gray-600 font-semibold py-1">
+              <a
+                href="#"
+                class="text-gray-600 hover:text-gray-900"
+                >Northbridge Softworks</a
+              >.
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+  <script>
+    function toggleNavbar(collapseID) {
+      document.getElementById(collapseID).classList.toggle("hidden");
+      document.getElementById(collapseID).classList.toggle("block");
+    }
+  </script>
+</html>
