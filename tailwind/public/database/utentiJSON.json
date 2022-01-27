@@ -1,0 +1,22 @@
+utentiJSON = `[
+	{
+		"username" : "admin",
+		"password" : 1234,
+		"email" : "admin@gmail.com",
+		"carrello" : [],
+		"nomeAzienda" : "",
+		"indirizzoAzienda" : "",
+		"partitaIva" : "",
+		"codiceFiscale" : ""
+	},
+	{
+		"username" : "user",
+		"password" : 1234,
+		"email" : "user@gmail.com",
+		"carrello" : [],
+		"nomeAzienda" : "",
+		"indirizzoAzienda" : "",
+		"partitaIva" : "",
+		"codiceFiscale" : ""
+	}
+]`

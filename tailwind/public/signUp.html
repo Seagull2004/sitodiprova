@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-    		<title>Accedi alla piattaforma</title>
+    		<title>Registrati alla piattaforma</title>
     		<link rel="icon" href="img/icona-890x890.png"> 
     		<meta charset="utf-8" />
     		<meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -18,30 +18,6 @@
 		<script>
 			function toggleNavbar(navbarID) {
 				$('#' + navbarID).toggle(500)
-			}
-		</script>
-		<script src="database/utentiJSON.json"></script>
-		<script>
-			var utenti = JSON.parse(utentiJSON)
-			function checkLogIn()
-			{
-				var nomeUtente = document.formLogIn.nome_utente.value
-				var password = document.formLogIn.password.value
-
-				var accessoConsentito = utenti.some(function(item, i)
-				{
-					return (nomeUtente == item.username || nomeUtente == item.email) && (password == item.password)
-				})
-
-				if(accessoConsentito)
-				{
-					alert("Login eseguito con successo!")
-				}
-				else
-				{
-					alert("Usernmane o password inseriti non validi")
-					document.formLogIn.reset()
-				}
 			}
 		</script>
 	</head>
@@ -132,13 +108,10 @@
 				</div>
 			
 			</div>
-		
-			
-
-
-			
 		</main>
-	
+
+
+		
 		<div class="container  mx-auto pt-4 pt-20 flex content-center items-center justify-center">
 			<div class="w-full flex flex-wrap justify-center lg:-mt-64 -mt-48">
 				<div class="w-full lg:w-6/12 px-4">
@@ -146,66 +119,80 @@
 					class="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-gray-300"
 					>
 						<div class="flex-auto p-10 lg:p-20">
-							<h4 class="text-2xl font-semibold">Effettua l'accesso</h4>
+							<h4 class="text-2xl font-semibold">Effettua l'iscrizione</h4>
 							<p class="leading-relaxed mt-1 mb-4 text-gray-600">
-								Esegui l'accesso con le credenziali del tuo profilo 
-								o se ancora non ce l'hai creane uno facendo clic sul bottone "Sign up".
+								Iscriviti alla piattaforma inserendo nei campi sottostanti 
+								le informazioni richieste.
 							</p>
-							<form 
-							name="formLogIn"
-							method="post"
-							action="login.html"
-							onsubmit="checkLogIn(); return false"
-							>
-
-								<div class="relative w-full mb-3 mt-8">
-									<label
-									class="block uppercase text-gray-700 text-xs font-bold mb-2"
-									for="nomeUtente"
-									>
-										Nome utente
-									</label>
-									
-									<input
-									type="text"
-									class="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
-									placeholder="Nome utente"
-									style="transition: all 0.15s ease 0s;"
-									required
-									autofocus
-									name="nome_utente"
-									/>
-								</div>
-
-								<div class="relative w-full mb-3">
-									<label
-									class="block uppercase text-gray-700 text-xs font-bold mb-2"
-									for="password"
-									>
-										Password
-									</label>
-									
-									<input
-									type="password"
-									class="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
-									placeholder="password"
-									style="transition: all 0.15s ease 0s;"
-									required
-									name="password"
-									/>
-								</div>
-
-								<div class="text-center mt-6">
-									<button
-									class="bg-gray-900 text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
-									type="submit"
-									style="transition: all 0.15s ease 0s;"
-									>
-									Accedi
-									</button>
-								</div>
-
-							</form>
+							<div class="relative w-full mb-3 mt-8">
+								<label
+								class="block uppercase text-gray-700 text-xs font-bold mb-2"
+								for="nome_utente"
+								>
+									Nome Utente
+								</label>
+								
+								<input
+								type="text"
+								class="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
+								placeholder="Inserisci il nome utente"
+								style="transition: all 0.15s ease 0s;"
+								/>
+							</div>
+							<div class="relative w-full mb-3">
+								<label
+								class="block uppercase text-gray-700 text-xs font-bold mb-2"
+								for="email"
+								>
+									E-mail
+								</label>
+								
+								<input
+								type="text"
+								class="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
+								placeholder="Inserisci l'e-mail"
+								style="transition: all 0.15s ease 0s;"
+								/>
+							</div>
+							<div class="relative w-full mb-3">
+								<label
+								class="block uppercase text-gray-700 text-xs font-bold mb-2"
+								for="password"
+								>
+									Password
+								</label>
+								
+								<input
+								type="Inserisci la password"
+								class="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
+								placeholder="password"
+								style="transition: all 0.15s ease 0s;"
+								/>
+							</div>
+							<div class="relative w-full mb-3">
+								<label
+								class="block uppercase text-gray-700 text-xs font-bold mb-2"
+								for="confermaPassword"
+								>
+									Conferma password
+								</label>
+								
+								<input
+								type="Inserisci la password"
+								class="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
+								placeholder="Conferma la password"
+								style="transition: all 0.15s ease 0s;"
+								/>
+							</div>
+							<div class="text-center mt-6">
+								<button
+								class="bg-gray-900 text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+								type="button"
+								style="transition: all 0.15s ease 0s;"
+								>
+								Registrati
+								</button>
+							</div>
 						</div>
 					</div>
 				</div>
