@@ -7,6 +7,8 @@ class Carrello
   #totaleConIva
   #cronologiaAcquisti // array di prodotti
   #arrayProdotti
+  #arrayQuantità
+  #arrayQuantitàCronologia
   
   // Costruttori --------------------------------------------
 
@@ -17,6 +19,8 @@ class Carrello
     this.#totaleConIva = 0.0
     this.#arrayProdotti = new Prodotto()[0]
     this.#cronologiaAcquisti = new Prodotto()[0]
+    this.#arrayQuantità = 0;
+    this.#arrayQuantitàCronologia = 0
   }
 
   // Getter --------------------------------------------
@@ -46,15 +50,31 @@ class Carrello
     return this.arrayProdotti
   }
 
+  get arrayQuantità()
+  {
+    return this.#arrayQuantità
+  }
+
+  get arrayQuantitàCronologia()
+  {
+    return this.#arrayQuantitàCronologia
+  }
+
   // Metodi --------------------------------------------
   
-  aggiungiProdotto(prodotto)
+  aggiungiProdotto(nomeProdotto, quantità, magazzino)
   {
-    this.#numeroProdotti++;
-    //da continuare
+    let indice = magazzino.trovaIndice(nomeProdotto)
+    
+    if(indice != -1 && magazzino.quantitàMagazzino[indice] >= quantità)
+    {
+      
+    }
+
+    
   }
   
-  eliminaProdotto(prodotto)
+  eliminaProdotto(nomeProdotto, magazzino)
   {
     if(this.#numeroProdotti > 0)
       this.#numeroProdotti--;
@@ -71,10 +91,10 @@ class Carrello
     out += "totale con iva: " + this.#totaleConIva + "\n"
     out += "cronologia acquisti:\n"
     for(var i = 0 ; i < this.#cronologiaAcquisti.length() ; i++)
-        out += this.#cronologiaAcquisti[i] + "\n"
+        out += this.#cronologiaAcquisti[i] + "quantità: "+this.#arrayQuantitàCronologia[i]+"\n"
     out += "prodotti presenti nel carrello:\n"
     for(var i = 0 ; i < this.#numeroProdotti ; i++ )
-        out += this.#arrayProdotti[i] + "\n"
+        out += this.#arrayProdotti[i] + "quantità"+ this.#arrayQuantità +"\n"
     return out;
   }
 

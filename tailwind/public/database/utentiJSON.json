@@ -1,7 +1,7 @@
 utentiJSON = `[
 	{
 		"username" : "admin",
-		"password" : 1234,
+		"password" : "1234",
 		"email" : "admin@gmail.com",
 		"carrello" : [],
 		"nomeAzienda" : "",
@@ -11,7 +11,7 @@ utentiJSON = `[
 	},
 	{
 		"username" : "user",
-		"password" : 1234,
+		"password" : "1234",
 		"email" : "user@gmail.com",
 		"carrello" : [],
 		"nomeAzienda" : "",

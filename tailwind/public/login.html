@@ -25,7 +25,7 @@
 			var utenti = JSON.parse(utentiJSON)
 			function checkLogIn()
 			{
-				var nomeUtente = document.formLogIn.nome_utente.value
+				var nomeUtente = document.formLogIn.nomeUtente.value
 				var password = document.formLogIn.password.value
 
 				var accessoConsentito = utenti.some(function(item, i)
@@ -39,7 +39,7 @@
 				}
 				else
 				{
-					alert("Usernmane o password inseriti non validi")
+					alert("Username o password inseriti non validi")
 					document.formLogIn.reset()
 				}
 			}
@@ -133,10 +133,6 @@
 			
 			</div>
 		
-			
-
-
-			
 		</main>
 	
 		<div class="container  mx-auto pt-4 pt-20 flex content-center items-center justify-center">
@@ -173,7 +169,7 @@
 									style="transition: all 0.15s ease 0s;"
 									required
 									autofocus
-									name="nome_utente"
+									name="nomeUtente"
 									/>
 								</div>
 
@@ -218,7 +214,7 @@
 			class="flex flex-wrap items-center md:justify-between justify-center"
 			>
 				<div class="w-full md:w-4/12 px-4 mx-auto text-center">
-					<div class="text-sm text-gray-600 font-semibold py-1">
+					<div class="text-sm text-gray-600 font-semibold py-1 pb-6">
 						<a
 						href="#"
 						class="text-gray-600 hover:text-gray-900"

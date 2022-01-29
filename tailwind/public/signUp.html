@@ -20,6 +20,78 @@
 				$('#' + navbarID).toggle(500)
 			}
 		</script>
+		<script src="database/utentiJSON.json"></script>
+		<script src="script/classeUtente.js"></script>
+		<script src="script/classeCarrello.js"></script>
+		<script src="script/classeProdotto.js"></script>
+		<script>
+			var utenti = JSON.parse(utentiJSON)
+			function checkSignUp()
+			{
+				var nomeUtente = document.formSignUp.nomeUtente.value
+				var password = document.formSignUp.password.value
+				var confermaPassword = document.formSignUp.confermaPassword.value
+				var email = document.formSignUp.email.value
+
+				if(password == confermaPassword)
+				{
+					var registrazioneConsentita = utenti.some(function(item, i)
+					{
+						return (nomeUtente == item.username || email == item.email)
+					})
+
+
+					if(!registrazioneConsentita)
+					{
+						alert("Registrazione eseguita con successo!")
+						document.formSignUp.reset()
+						aggiungiUtente(nomeUtente, email, password)
+					}
+					else
+					{
+						alert("Il nome utente o la mail sono già presenti esegui l'accesso con le tue credenziali")
+						document.formSignUp.reset()
+					}
+				}
+				else
+				{
+					alert("La password e la sua conferma non corrispondono")
+				}			
+			}
+
+			function aggiungiUtente(nomeUtente, email, password)
+			{
+				var nuovoUtente = new Utente(nomeUtente, email, password)				
+				
+				nuovoUtente = {
+					"username" : nuovoUtente.username,
+					"password" : nuovoUtente.password,
+					"email" : nuovoUtente.email,
+					"carrello" : [],
+					"nomeAzienda" : "",
+					"indirizzoAzienda" : "",
+					"partitaIva" : "",
+					"codiceFiscale" : ""
+				}
+
+				utenti.push(nuovoUtente)
+				
+				//dopo la modifica trasformo l'oggetto in una stringa
+				utenti = "utentiJSON=`" + JSON.stringify(utenti) + "`"
+
+				//apporto la modifica al file con php
+				var nuovoContenuto = {"content" : utenti}
+				$.ajax({
+					data: nuovoContenuto, 
+					url: "php/aggiornaListaUtenti.php",
+					type: "POST",
+					success: function(data){
+						console.log("Aggiornamento file riuscito")
+						console.log(data)
+					}
+				})
+			}
+		</script>
 	</head>
 
 
@@ -124,75 +196,91 @@
 								Iscriviti alla piattaforma inserendo nei campi sottostanti 
 								le informazioni richieste.
 							</p>
-							<div class="relative w-full mb-3 mt-8">
-								<label
-								class="block uppercase text-gray-700 text-xs font-bold mb-2"
-								for="nome_utente"
-								>
-									Nome Utente
-								</label>
-								
-								<input
-								type="text"
-								class="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
-								placeholder="Inserisci il nome utente"
-								style="transition: all 0.15s ease 0s;"
-								/>
-							</div>
-							<div class="relative w-full mb-3">
-								<label
-								class="block uppercase text-gray-700 text-xs font-bold mb-2"
-								for="email"
-								>
-									E-mail
-								</label>
-								
-								<input
-								type="text"
-								class="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
-								placeholder="Inserisci l'e-mail"
-								style="transition: all 0.15s ease 0s;"
-								/>
-							</div>
-							<div class="relative w-full mb-3">
-								<label
-								class="block uppercase text-gray-700 text-xs font-bold mb-2"
-								for="password"
-								>
-									Password
-								</label>
-								
-								<input
-								type="Inserisci la password"
-								class="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
-								placeholder="password"
-								style="transition: all 0.15s ease 0s;"
-								/>
-							</div>
-							<div class="relative w-full mb-3">
-								<label
-								class="block uppercase text-gray-700 text-xs font-bold mb-2"
-								for="confermaPassword"
-								>
-									Conferma password
-								</label>
-								
-								<input
-								type="Inserisci la password"
-								class="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
-								placeholder="Conferma la password"
-								style="transition: all 0.15s ease 0s;"
-								/>
-							</div>
-							<div class="text-center mt-6">
-								<button
-								class="bg-gray-900 text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
-								type="button"
-								style="transition: all 0.15s ease 0s;"
-								>
-								Registrati
-								</button>
-							</div>
+							<form 
+							name="formSignUp"
+							method="post"
+							action="signUp.html"
+							onsubmit="checkSignUp(); return false"
+							>
+								<div class="relative w-full mb-3 mt-8">
+									<label
+									class="block uppercase text-gray-700 text-xs font-bold mb-2"
+									for="nome_utente"
+									>
+										Nome Utente
+									</label>
+									
+									<input
+									type="text"
+									class="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
+									placeholder="Inserisci il nome utente"
+									style="transition: all 0.15s ease 0s;"
+									required
+									autofocus
+									name="nomeUtente"
+									/>
+								</div>
+								<div class="relative w-full mb-3">
+									<label
+									class="block uppercase text-gray-700 text-xs font-bold mb-2"
+									for="email"
+									>
+										E-mail
+									</label>
+									
+									<input
+									type="email"
+									class="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
+									placeholder="Inserisci l'e-mail"
+									style="transition: all 0.15s ease 0s;"
+									required
+									name="email"
+									/>
+								</div>
+								<div class="relative w-full mb-3">
+									<label
+									class="block uppercase text-gray-700 text-xs font-bold mb-2"
+									for="password"
+									>
+										Password
+									</label>
+									
+									<input
+									type="password"
+									class="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
+									placeholder="Inserisci la password"
+									style="transition: all 0.15s ease 0s;"
+									required
+									name="password"
+									/>
+								</div>
+								<div class="relative w-full mb-3">
+									<label
+									class="block uppercase text-gray-700 text-xs font-bold mb-2"
+									for="confermaPassword"
+									>
+										Conferma password
+									</label>
+									
+									<input
+									type="password"
+									class="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
+									placeholder="Conferma la password"
+									style="transition: all 0.15s ease 0s;"
+									required
+									name="confermaPassword"
+									/>
+								</div>
+								<div class="text-center mt-6">
+									<button
+									class="bg-gray-900 text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+									type="submit"
+									style="transition: all 0.15s ease 0s;"
+									>
+									Registrati
+									</button>
+								</div>
+							</form>
 						</div>
 					</div>
 				</div>
@@ -205,7 +293,7 @@
 			class="flex flex-wrap items-center md:justify-between justify-center"
 			>
 				<div class="w-full md:w-4/12 px-4 mx-auto text-center">
-					<div class="text-sm text-gray-600 font-semibold py-1">
+					<div class="text-sm text-gray-600 font-semibold py-1 pb-6">
 						<a
 						href="#"
 						class="text-gray-600 hover:text-gray-900"
