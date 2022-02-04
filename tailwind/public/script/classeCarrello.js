@@ -1,48 +1,61 @@
 class Carrello 
 {
-  // Attributi --------------------------------------------
+  // Attributi ------------------------------------------------------------------------------------------------------------------------------------------------
 
-  #numeroProdotti
-  #totaleSenzaIva
-  #totaleConIva
-  #cronologiaAcquisti // array di prodotti
-  #arrayProdotti
-  #arrayQuantità
-  #arrayQuantitàCronologia
+  numeroProdotti
+  totaleSenzaIva
+  totaleConIva
+  cronologiaAcquisti // array di prodotti
+  arrayProdotti
+  arrayQuantità
+  arrayQuantitàCronologia
   
-  // Costruttori --------------------------------------------
+  // Costruttori e metodi statici ------------------------------------------------------------------------------------------------------------------------------------------------
 
-  constructor()
+  constructor(numeroProdotti, totaleSenzaIva, totaleConIva, cronologiaAcquisti, arrayProdotti, arrayQuantità, arrayQuantitàCronologia)
   {
-    this.#numeroProdotti = 0
-    this.#totaleSenzaIva = 0.0
-    this.#totaleConIva = 0.0
-    this.#arrayProdotti = new Prodotto()[0]
-    this.#cronologiaAcquisti = new Prodotto()[0]
-    this.#arrayQuantità = 0;
-    this.#arrayQuantitàCronologia = 0
+    this.numeroProdotti = numeroProdotti
+    this.totaleSenzaIva = totaleSenzaIva
+    this.totaleConIva = totaleConIva
+    this.cronologiaAcquisti = cronologiaAcquisti
+    this.arrayProdotti = arrayProdotti
+    this.arrayQuantità = arrayQuantità
+    this.arrayQuantitàCronologia = arrayQuantitàCronologia
   }
 
-  // Getter --------------------------------------------
+
+  // se voglio creare un carrello senza nessuna informazione faccio = Carrello.carrelloVuoto()
+  static carrelloVuoto()
+  {
+    return new Carrello(0, 0.0, 0.0,[], [], 0, 0)
+  }
+
+  // attraverso le informazioni di un oggetto ne crea uno di tipo Prodotto
+  static toCarrello(oggetto)
+  {
+      return new Carrello(oggetto.numeroProdotti, oggetto.totaleSenzaIva, oggetto.totaleConIva, oggetto.cronologiaAcquisti, oggetto.arrayProdotti, oggetto.arrayQuantità, oggetto.arrayQuantitàCronologia)
+  }
+
+  // Getter ------------------------------------------------------------------------------------------------------------------------------------------------
   
   get numeroProdotti()
   {
-    return this.#numeroProdotti
+    return this.numeroProdotti
   }
 
   get totaleSenzaIva()
   {
-    return this.#totaleSenzaIva
+    return this.totaleSenzaIva
   }
 
   get totaleConIva()
   {
-    return this.#totaleConIva
+    return this.totaleConIva
   }
 
   get cronologiaAcquisti()
   {
-    return this.#cronologiaAcquisti 
+    return this.cronologiaAcquisti 
   }
 
   get arrayProdotti()
@@ -52,50 +65,90 @@ class Carrello
 
   get arrayQuantità()
   {
-    return this.#arrayQuantità
+    return this.arrayQuantità
   }
 
   get arrayQuantitàCronologia()
   {
-    return this.#arrayQuantitàCronologia
+    return this.arrayQuantitàCronologia
   }
 
-  // Metodi --------------------------------------------
+  // Metodi ------------------------------------------------------------------------------------------------------------------------------------------------
   
+  /*Aggiunge "quantità" pezzi di un prodotto dato al carrello*/
   aggiungiProdotto(nomeProdotto, quantità, magazzino)
   {
     let indice = magazzino.trovaIndice(nomeProdotto)
-    
-    if(indice != -1 && magazzino.quantitàMagazzino[indice] >= quantità)
-    {
-      
-    }
 
-    
+
+    // il prodotto è disponibile in magazzino
+    if(indice != -1 && quantità > 0 && magazzino.quantitàMagazzino[indice] >= quantità) 
+    {
+      magazzino.quantitàMagazzino[indice] -= quantità;
+      this.numeroProdotti += quantità
+      this.totaleSenzaIva += magazzino.prodotti[indice].prezzoSenzaIva * quantità
+      this.totaleConIva = this.totaleSenzaIva * 1.22
+
+
+      // il prodotto è già nel carrello, quindi aumento solo la quantità corrispondente
+      if(this.arrayProdotti.includes(magazzino.prodotti[indice]))
+      {
+        indice = this.arrayProdotti.indexOf(magazzino.prodotti[indice])
+        this.arrayQuantità[indice] += quantità
+      }
+      // aggiungo all'array di prodotti il prodotto, stessa cosa per l'array con le quantità
+      else 
+      {
+        this.arrayProdotti.push(magazzino.prodotti[indice])
+        this.arrayQuantità.push(quantità)
+      }
+    }
+    else
+    {
+      console.error("Errore: prodotto non esistente o esaurito")
+    }
   }
   
-  eliminaProdotto(nomeProdotto, magazzino)
+  /*Elimina "quantità" pezzi di prodotto dal carrello */
+  eliminaProdotto(nomeProdotto, magazzino, quantità)
   {
-    if(this.#numeroProdotti > 0)
-      this.#numeroProdotti--;
-      // da continuare
+    let indice = magazzino.trovaIndice(nomeProdotto)
+    let prodotto = magazzino.prodotti[indice]
+    let indiceCarrello = this.arrayProdotti.indexOf(prodotto)
+
+    //il prodotto è disponibile e la quantità che si sta cercando di eliminare non supera quella presente nel carrello
+    if(indice != -1 && this.arrayProdotti.includes(prodotto)
+       && this.arrayQuantità[indiceCarrello] >= quantità) 
+    {
+      this.arrayQuantità[indiceCarrello] -= quantità
+
+      //la quantità nel carrello dopo l'eliminazione è 0, viene dunque rimosso il prodotto dal carrello
+      if(this.arrayQuantità[indiceCarrello] == 0)
+      {
+        this.arrayProdotti.splice(indiceCarrello, 1);
+        this.arrayQuantità.splice(indiceCarrello, 1);
+      }
+
+      this.numeroProdotti -= quantità
+      this.totaleSenzaIva -= prodotto.prezzoSenzaIva * quantità
+      this.totaleConIva = this.totaleSenzaIva * 1.22
+      magazzino.quantitàMagazzino[indice] += quantità
+    }
     else
-      console.error("errore: nessun prodotto da eliminare")
-      // da continuare
+      console.error("Errore: prodotto non esistente, non presente nel carrello o la quantità di prodotto che si sta cercando di rimuovere è troppo alta")
   }
 
   toString()
   {
-    out =  "numero di prodotti: " + this.#numeroProdotti + "\n"
-    out += "totale senza iva: " + this.#totaleSenzaIva + "\n"
-    out += "totale con iva: " + this.#totaleConIva + "\n"
+    var out =  "numero di prodotti: " + this.numeroProdotti + "\n"
+    out += "totale senza iva: " + this.totaleSenzaIva + "\n"
+    out += "totale con iva: " + this.totaleConIva + "\n"
     out += "cronologia acquisti:\n"
-    for(var i = 0 ; i < this.#cronologiaAcquisti.length() ; i++)
-        out += this.#cronologiaAcquisti[i] + "quantità: "+this.#arrayQuantitàCronologia[i]+"\n"
+    for(var i = 0 ; i < this.cronologiaAcquisti.length() ; i++)
+        out += this.cronologiaAcquisti[i] + "quantità: "+this.arrayQuantitàCronologia[i]+"\n"
     out += "prodotti presenti nel carrello:\n"
-    for(var i = 0 ; i < this.#numeroProdotti ; i++ )
-        out += this.#arrayProdotti[i] + "quantità"+ this.#arrayQuantità +"\n"
+    for(var i = 0 ; i < this.numeroProdotti ; i++ )
+        out += this.arrayProdotti[i] + "quantità"+ this.arrayQuantità +"\n"
     return out;
   }
-
 }

@@ -25,27 +25,38 @@
 		<script src="script/classeCarrello.js"></script>
 		<script src="script/classeProdotto.js"></script>
 		<script>
+			// leggo l'oggetto che contiene tutti gli utenti e trasformo tutti i suoi elementi in oggetti di tipo Utente
 			var utenti = JSON.parse(utentiJSON)
+			utenti = utenti.map(function(item, i)
+			{
+				return Utente.toUtente(item)
+			})
+
 			function checkSignUp()
 			{
+				// salvo in quattro variabili i dati inseriti nella registrazione
 				var nomeUtente = document.formSignUp.nomeUtente.value
 				var password = document.formSignUp.password.value
 				var confermaPassword = document.formSignUp.confermaPassword.value
 				var email = document.formSignUp.email.value
 
+				// controllo la conferma della password sia effettivamente uguale alla password scelta
 				if(password == confermaPassword)
 				{
+					// la registrazione sarà consentita se non esiste già un altro utente con lo stesso username o mail
 					var registrazioneConsentita = utenti.some(function(item, i)
 					{
 						return (nomeUtente == item.username || email == item.email)
 					})
 
-
+					// in base all'esito della registrazione mi comporto di conseguenza
 					if(!registrazioneConsentita)
 					{
 						alert("Registrazione eseguita con successo!")
-						document.formSignUp.reset()
+						// a questo punto aggiungo aggiungere un nuovo utente al mio database
 						aggiungiUtente(nomeUtente, email, password)
+						utenti = JSON.parse(utentiJSON)
+						window.location.href = "login.html";
 					}
 					else
 					{
@@ -59,26 +70,22 @@
 				}			
 			}
 
+			// aggiunge un nuovo oggetto di tipo utente al database di utenti
 			function aggiungiUtente(nomeUtente, email, password)
 			{
-				var nuovoUtente = new Utente(nomeUtente, email, password)				
+				// creo un nuovo oggetto con le informazioni di base necessarie per la registrazione
+				var nuovoUtente = Utente.informazioniBase(nomeUtente, email, password)				
 				
-				nuovoUtente = {
-					"username" : nuovoUtente.username,
-					"password" : nuovoUtente.password,
-					"email" : nuovoUtente.email,
-					"carrello" : [],
-					"nomeAzienda" : "",
-					"indirizzoAzienda" : "",
-					"partitaIva" : "",
-					"codiceFiscale" : ""
-				}
+				console.log(nuovoUtente)
 
+				// aggiungo il nuovo oggetto insime agli altri	
 				utenti.push(nuovoUtente)
+				
 				
 				//dopo la modifica trasformo l'oggetto in una stringa
 				utenti = "utentiJSON=`" + JSON.stringify(utenti) + "`"
-
+				console.log(utenti)
+				
 				//apporto la modifica al file con php
 				var nuovoContenuto = {"content" : utenti}
 				$.ajax({
@@ -91,6 +98,9 @@
 					}
 				})
 			}
+
+			
+			
 		</script>
 	</head>
 
