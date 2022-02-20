@@ -21,16 +21,20 @@
 			}
 		</script>
 		<script src="database/utentiJSON.json"></script>
-		<script src="script/classeUtente.js"></script>
-		<script src="script/classeCarrello.js"></script>
 		<script src="script/classeProdotto.js"></script>
+		<script src="script/classeCarrello.js"></script>
+		<script src="script/classeUtente.js"></script>
+		<script src="script/classeAmministratore.js"></script>
 		<script>
 			// leggo l'oggetto che contiene tutti gli utenti e trasformo tutti i suoi elementi in oggetti di tipo Utente
 			var utenti = JSON.parse(utentiJSON)
+
 			utenti = utenti.map(function(item, i)
 			{
-				return Utente.toUtente(item)
+				return Utente.parse(item)
 			})
+
+
 
 			function checkSignUp()
 			{
@@ -52,16 +56,19 @@
 					// in base all'esito della registrazione mi comporto di conseguenza
 					if(!registrazioneConsentita)
 					{
-						alert("Registrazione eseguita con successo!")
 						// a questo punto aggiungo aggiungere un nuovo utente al mio database
 						aggiungiUtente(nomeUtente, email, password)
-						utenti = JSON.parse(utentiJSON)
-						window.location.href = "login.html";
 					}
 					else
 					{
-						alert("Il nome utente o la mail sono già presenti esegui l'accesso con le tue credenziali")
-						document.formSignUp.reset()
+						if(confirm("Il nome utente o la mail sono già presenti. Vuoi eseguire l'accesso con le tue credenziali?"))
+						{
+							window.location = "login.html"
+						}
+						else
+						{
+							document.formSignUp.nomeUtente.focus()
+						}
 					}
 				}
 				else
@@ -75,28 +82,46 @@
 			{
 				// creo un nuovo oggetto con le informazioni di base necessarie per la registrazione
 				var nuovoUtente = Utente.informazioniBase(nomeUtente, email, password)				
-				
-				console.log(nuovoUtente)
 
 				// aggiungo il nuovo oggetto insime agli altri	
 				utenti.push(nuovoUtente)
 				
 				
-				//dopo la modifica trasformo l'oggetto in una stringa
-				utenti = "utentiJSON=`" + JSON.stringify(utenti) + "`"
-				console.log(utenti)
+				//trasformo l'oggetto in una stringa
+				utenti = utenti.map(function(item)
+				{
+					return item.stringify()
+				})
+				utenti = JSON.stringify(utenti)
+
+				
+
 				
 				//apporto la modifica al file con php
-				var nuovoContenuto = {"content" : utenti}
 				$.ajax({
-					data: nuovoContenuto, 
+					data: {"content" : utenti}, 
 					url: "php/aggiornaListaUtenti.php",
 					type: "POST",
 					success: function(data){
-						console.log("Aggiornamento file riuscito")
-						console.log(data)
+						console.log("Registrazione eseguita con successo!")
 					}
 				})
+				
+				
+
+				//ritrasformo in un ggetto
+				utenti = JSON.parse(utentiJSON)
+				utenti = utenti.map(function(item)
+				{
+					return Utente.parse(item)
+				})
+
+
+				//chiedo all'utente se vuole essere reindirizzato alla pagina di login per effettuare l'accesso
+				if(confirm("Hai eseguito la registrazione con successo. Vuoi effettuare l'accesso?"))
+				{
+					window.location = "login.html"
+				}
 			}
 
 			

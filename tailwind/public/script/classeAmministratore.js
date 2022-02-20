@@ -2,13 +2,20 @@ class Amministratore extends Utente
 {
 
     // Attributi ------------------------------------------------------------------------------------------------------------------------------------------------
+    #admin = true
 
-    Admin
+    // Costruttori e metodi statici ------------------------------------------------------------------------------------------------------------------------------------------------
 
-    // Costruttori ------------------------------------------------------------------------------------------------------------------------------------------------
-
-    constructor()
+    constructor(username, email, password, carrello, nomeAzienda, indirizzoAzienda, partitaIva, codiceFiscale)
     {
-        this.Admin = true;   
+        super(username, email, password, carrello, nomeAzienda, indirizzoAzienda, partitaIva, codiceFiscale)
+    }
+
+
+    static toAmministratore(oggetto)
+    {
+        oggetto.carrello = Carrello.toCarrello(oggetto.carrello)
+
+        return new Amministratore(oggetto.username, oggetto.email, oggetto.password, oggetto.carrello, oggetto.nomeAzienda, oggetto.indirizzoAzienda, oggetto.partitaIva, oggetto.codiceFiscale)
     }
 }

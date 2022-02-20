@@ -21,9 +21,20 @@
 			}
 		</script>
 		<script src="database/utentiJSON.json"></script>
+		<script src="script/classeProdotto.js"></script>
+		<script src="script/classeCarrello.js"></script>
+		<script src="script/classeUtente.js"></script>
+		<script src="script/classeAmministratore.js"></script>
 		<script>
 			// leggo l'oggetto che contiene tutti gli utenti
 			var utenti = JSON.parse(utentiJSON)
+
+			utenti = utenti.map((item) => 
+			{
+				return Utente.parse(item)
+			})
+
+			
 
 			// valuta la validità delle credenziali immesse dall'utente
 			function checkLogIn()
@@ -35,6 +46,10 @@
 				// associo ad una variabile l'esito della ricerca delle credenziali immesse
 				var accessoConsentito = utenti.some(function(item, i)
 				{
+					if((nomeUtente == item.username || nomeUtente == item.email) && (password == item.password))
+					{
+						localStorage.setItem('utenteAccesso', item.stringify())
+					}
 					return (nomeUtente == item.username || nomeUtente == item.email) && (password == item.password)
 				})
 
@@ -46,7 +61,7 @@
 				else
 				{
 					alert("Username o password inseriti non validi")
-					document.formLogIn.reset()
+					document.formLogIn.nomeUtente.focus()
 				}
 			}
 		</script>

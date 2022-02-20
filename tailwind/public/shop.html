@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Scegli cosa acquistare</title>
+    <title>Il tuo shop!</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
@@ -21,8 +21,11 @@
       rel="stylesheet"
       href="style/styles.css"
     >
+    <script src="librerie/popper.min.js"></script>
     <script src="librerie/jquerymin.js"></script>
     <script>
+
+      /* funzione per jQuery che ricava la classList di un elemento */
       $.fn.classList = function()
       {
         return this[0].classList
@@ -38,79 +41,273 @@
         $('#' + collapseID).classList().toggle("px-6")
       }
 
-      //generare un prodotto in base ai dati
+      /* Menù a tendina per icona utente */
+      function apriUserMenu(event, dropdownID) 
+      {
+        let element = event.target
+
+        while (element.nodeName !== "A") 
+        {
+          element = element.parentNode
+        }
+
+        var popper = Popper.createPopper(element, document.getElementById(dropdownID),
+        {
+          placement: "bottom-end"
+        })
+
+        $('#' + dropdownID).classList().toggle("hidden")
+        $('#' + dropdownID).classList().toggle("block")
+      }
+
+      /* generare un prodotto in base ai dati */
       function prodottoToHTML(tipoProdotto, nomeProdotto, prezzo, pezziDisponibili)
       {
-        var toHtmlString = '<div class="w-full lg:w-6/12 xl:w-3/12 px-4 pt-6">'
-        toHtmlString += '<div class="relative flex flex-col min-w-0 break-words bg-white rounded mb-6 xl:mb-0 shadow-lg">'
-        toHtmlString += '<div class="flex-auto p-4">'
-        toHtmlString += '<div class="flex flex-wrap">'
-        toHtmlString += '<div class="relative w-full pr-4 max-w-full flex-grow flex-1">'
-        toHtmlString += '<h3 class="text-blueGray-400 uppercase font-bold text-xs">#'
-        toHtmlString += tipoProdotto
-        toHtmlString += '</h3>'
-        toHtmlString += '<h5 class="text-black uppercase font-bold text-xl">'
-        toHtmlString += nomeProdotto
-        toHtmlString += '</h5>'
-        toHtmlString += '<span class="font-semibold text-xl text-blueGray-700">'
-        toHtmlString += prezzo
-        toHtmlString += '</span> €'
-        toHtmlString += '</div>'
-        toHtmlString += '<div class="relative w-auto pl-4 flex-initial">'
+        var toHtmlString =  '<div class="w-full lg:w-6/12 xl:w-3/12 px-4 pt-6">'
+        toHtmlString +=       '<div class="relative flex flex-col min-w-0 break-words bg-white rounded mb-6 xl:mb-0 shadow-lg">'
+        toHtmlString +=         '<div class="flex-auto p-4">'
+        toHtmlString +=           '<div class="flex flex-wrap">'
+        toHtmlString +=             '<div class="relative w-full pr-4 max-w-full flex-grow flex-1">'
+        toHtmlString +=               '<h3 class="text-blueGray-400 uppercase font-bold text-xs">#'
+        toHtmlString +=                 tipoProdotto
+        toHtmlString +=               '</h3>'
+        toHtmlString +=               '<h5 class="text-black uppercase font-bold text-xl">'
+        toHtmlString +=                 nomeProdotto
+        toHtmlString +=               '</h5>'
+        toHtmlString +=               '<span class="font-semibold text-xl text-blueGray-700">'
+        toHtmlString +=                 prezzo
+        toHtmlString +=               '</span> €'
+        toHtmlString +=             '</div>'
+        toHtmlString +=             '<div class="relative w-auto pl-4 flex-initial">'
         
           // da vedere se sostituire con una immagine
-        toHtmlString += '<div class="text-white p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-lightBlue-500">'
-        toHtmlString += '<i class="fas fa-mouse"></i>'
-        toHtmlString += '</div>'
+        toHtmlString +=             '<div class="text-white p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-lightBlue-500">'
+        toHtmlString +=               '<i class="fas fa-mouse"></i>'
+        toHtmlString +=             '</div>'
         
-        toHtmlString += '</div>'
-        toHtmlString += '</div>'
-        toHtmlString += '<p class="text-sm text-blueGray-400 mt-4">'
-        toHtmlString += '<span class="'
-        toHtmlString += pezziDisponibili > 0 ? ('text-emerald-500') : ('text-red-500')
-        toHtmlString += ' mr-2">'
-        toHtmlString += pezziDisponibili
-        toHtmlString += '</span>'
-        toHtmlString += '<span class="whitespace-nowrap">'
-        toHtmlString += 'pezzi disponibili'
-        toHtmlString += '</span>'
-        toHtmlString += '</p>'
-        toHtmlString += '</div>'
-        toHtmlString += '</div>'
-        toHtmlString += '</div>'
+        toHtmlString +=           '</div>'
+        toHtmlString +=         '</div>'
+        toHtmlString +=         '<p class ="inputNumberAdmin"></p>'
+        toHtmlString +=         '<p class="text-sm text-blueGray-400 mt-4">'
+        toHtmlString +=           '<span class="'
+        toHtmlString +=             pezziDisponibili > 0 ? ('text-green-600') : ('text-red-500')
+        toHtmlString +=            '">'
+        toHtmlString +=              pezziDisponibili
+        toHtmlString +=           '</span>'
+        toHtmlString +=           '<span class="whitespace-nowrap">'
+        toHtmlString +=            ' pezzi disponibili'
+        toHtmlString +=          '</span>'
+        toHtmlString +=         '</p>'
+        toHtmlString +=       '</div>'
+        toHtmlString +=      '</div>'
+        toHtmlString +=    '</div>'
 
         return toHtmlString
       }
     </script>
     <script src="database/magazzinoJSON.json"></script>
-    <script src="script/classeMagazzino.js"></script>
     <script src="script/classeProdotto.js"></script>
+    <script src="script/classeMagazzino.js"></script>
+    <script src="script/classeCarrello.js"></script>
+    <script src="script/classeUtente.js"></script>
+    <script src="script/classeAmministratore.js"></script>
     <script>
-      var magazzino = JSON.parse(magazzinoJSON)
-      window.onload = function()
+      var magazzino
+      var utenteAccesso
+
+      window.onload = caricamentoPagina
+
+      function caricamentoPagina()
       {
         // converto l'oggetto e i suoi figli negli oggetti specifici
-        magazzino = Magazzino.toMagazzino(magazzino)
-        magazzino.prodotti = magazzino.prodotti.map((item ,i)=>
-        {
-          return Prodotto.toProdotto(item)
-        })
+        magazzino = Magazzino.parse(magazzinoJSON)
 
         //vado a inserire ogni elemento nell'html
         magazzino.prodotti.forEach((item, i) => 
         {
-          var prodottoDaInserire = prodottoToHTML(item.categoria, item.nomeProdotto, item.prezzoSenzaIva, magazzino.quantitàMagazzino[i])
+          var prodottoDaInserire = prodottoToHTML(item.categoria, item.nomeProdotto, item.prezzoSenzaIva, magazzino.quantitaMagazzino[i])
           $('#areaArticoli').append(prodottoDaInserire)
-        });
+        })
+
+        utenteAccesso = Utente.parse(localStorage.getItem('utenteAccesso'))
+        
+
+        var opzioniAdmin = `<li class="items-center">
+                              <a
+                                class="text-blueGray-700 hover:text-blueGray-500 text-xs uppercase py-3 font-bold block cursor-pointer"
+                                onclick = "aggiungiOpzioniAdmin()"
+                                id ="opzioniAdmin"
+                                ><i class="fas fa-tools text-blueGray-400 mr-2 text-sm"></i>
+                                Opzioni
+                                </a>
+                            </li>`
+              
+        if(utenteAccesso instanceof Amministratore)
+        {
+          $("#ulMenu").append(opzioniAdmin)
+        }
+      
+
+        document.getElementById('spanSaluto').innerHTML = utenteAccesso.username
+
       }
+
+      function aggiungiOpzioniAdmin()
+      {
+        /* se questa funzione viene chiamata con un utente loggato non Amministratore allora fallisce */
+        if(!(utenteAccesso instanceof Amministratore))
+        {
+          return -1
+        }
+
+        /* modifico la funzione del bottone delle opzioni */
+        $('#opzioniAdmin').attr("onclick", "togliOpzioniAdmin()")
+
+        /* aggiungo la casella per aggiungere un prodotto al magazzino */
+        $("#areaArticoli").append
+        (
+          `
+          <div class="w-full lg:w-6/12 xl:w-3/12 px-4 pt-6" id="bottoneAggiungi">
+            <div class="relative flex flex-col min-w-0 break-words bg-white rounded mb-6 xl:mb-0 shadow-lg">
+              <div class="flex-auto p-4">
+                <div class="flex flex-wrap">
+                  <div class="relative w-auto pl-4 flex-initial">
+                    <i class="fas fa-plus text-blueGray-400 mr-2 text-2xl"></i>
+                    <span class="uppercase text-xs font-bold"> Aggiungi un  nuovo prodotto </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          `
+        )
+
+
+        /* aggiungo le opzioni di modifica sui singoli prodotti */
+        $(".inputNumberAdmin").append
+        (
+          `
+          <hr class="my-4 md:min-w-full" ></hr>
+          <input 
+            type="number" 
+            class="btn mt-3"
+            placeholder="Aggiungi o togli qtà"
+          > 
+          
+          <button 
+            class="btn text-blue-500 border-blue-500 md:border-2 hover:bg-blue-500 hover:text-white transition ease-out duration-500" 
+            type="button" 
+            onclick="cambiaQuantita(this)"
+          >
+             Applica
+          </button>
+
+          <button 
+            class="btn mt-2 text-red-500 border-red-500 md:border-2 hover:bg-red-500 hover:text-white transition ease-out duration-500" 
+            type="button" 
+            onclick="eliminaProdotto(this)"
+          >
+            <i class="fas fa-trash "></i>
+          </button>
+          `
+        )
+
+
+      }
+
+      function togliOpzioniAdmin()
+      {
+        /* modifico la funzione del bottone delle opzioni */
+        $('#opzioniAdmin').attr("onclick", "aggiungiOpzioniAdmin()")
+
+        /* rimuovo tutte le opzioni che sono state create da aggiungiOpzioniAdmin */
+        $('#bottoneAggiungi').remove()
+        $(".inputNumberAdmin").children().remove()
+      }
+
+      function cambiaQuantita(obj)
+      {
+        var numeroInput = obj.previousElementSibling.value
+        var nomeProdottoCorrente = obj.parentNode.previousElementSibling.children[0].children[1].innerText;
+
+        if(numeroInput > 0)
+        {
+          for(var i = 0 ; i < numeroInput ; i++)
+          {
+            magazzino.incrementaQuantita(nomeProdottoCorrente)
+          }
+        }
+        else
+        {
+          if(Math.abs(numeroInput) <= magazzino.quantitaMagazzino[magazzino.trovaIndice(nomeProdottoCorrente)])
+          {
+            for(var i = 0 ; i < Math.abs(numeroInput) ; i++)
+            {
+              magazzino.decrementaQuantita(nomeProdottoCorrente)
+            }
+          }
+          else
+          {
+            console.error("stai cercando di togliere troppi pezzi")
+            alert("stai cercando di togliere troppi pezzi")
+            obj.previousElementSibling.value = null
+            return -1
+          }
+        }
+
+        
+        /* apporto la modifica al file con php con le informzioni sul magazzino */
+				$.ajax({
+					data: {"content" : magazzino.stringify()}, 
+					url: "php/aggiornaMagazzino.php",
+					type: "POST",
+					success: function(data){
+						console.log(data)
+						console.log("Aggiornamento file riuscito")            
+					}
+				})
+
+
+        if(confirm("Hai appena apportato delle modifiche al magazzino. Vuoi ricaricare la pagina per visualizzarle?"))
+        {
+          window.location = "shop.html"
+        }
+      }
+
+      function eliminaProdotto(obj)
+      {
+        var nomeProdottoCorrente = obj.parentNode.previousElementSibling.children[0].children[1].innerText;
+
+        magazzino.eliminaProdottoDalMagazzino(nomeProdottoCorrente)
+
+        if(confirm("Sei sicuro di voler cancellare questo prodotto?"))
+        {
+          /* apporto la modifica al file con php contenente le informazioni sul magazzino*/
+          $.ajax({
+            data: {"content" : magazzino.stringify()}, 
+            url: "php/aggiornaMagazzino.php",
+            type: "POST",
+            success: function(data){
+              console.log(data)
+              console.log("Aggiornamento file riuscito")
+              setTimeout(1500)
+              window.location = "shop.html"
+            }
+          })
+        }
+          
+        
+      }
+      
+      function disconnetti()
+      {
+        console.log("questa funzione dovrebbe esseguire il log out")
+      }
+
     </script>
-
-
   </head>
   <body class="text-blueGray-700 antialiased">
     <div id="root">
-
-
       <nav
         class="md:left-0 md:block md:fixed md:top-0 md:bottom-0 md:overflow-y-auto md:flex-row md:flex-nowrap md:overflow-hidden shadow-xl bg-white flex flex-wrap items-center justify-between relative md:w-64 z-10 py-4 px-6"
       >
@@ -131,39 +328,12 @@
             Menù
           </a>
           <ul class="md:hidden items-center flex flex-wrap list-none">
-            <li class="inline-block relative">
-              
-              <div
-                class="hidden bg-white text-base z-50 float-left py-2 list-none text-left rounded shadow-lg mt-1"
-                style="min-width: 12rem;"
-                id="notification-dropdown"
-              >
-                <a
-                  href="#pablo"
-                  class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
-                  >Action</a
-                ><a
-                  href="#pablo"
-                  class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
-                  >Another action</a
-                ><a
-                  href="#pablo"
-                  class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
-                  >Something else here</a
-                >
-                <div class="h-0 my-2 border border-solid border-blueGray-100"></div>
-                <a
-                  href="#pablo"
-                  class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
-                  >Seprated link</a
-                >
-              </div>
-            </li>
+
             <li class="inline-block relative">
               <a
                 class="text-blueGray-500 block"
                 href="#pablo"
-                onclick="openDropdown(event,'user-responsive-dropdown')"
+                onclick="apriUserMenu(event,'user-responsive-dropdown')"
                 >
                 <div class="items-center flex">
                   <span
@@ -181,10 +351,13 @@
                 id="user-responsive-dropdown"
               >
                 <a
-                  href="#pablo"
-                  class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
-                  >Action</a
-                ><a
+                class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
+                onclick="disconnetti()"
+                >
+                  Disconetti
+                </a>
+                
+                <a
                   href="#pablo"
                   class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
                   >Another action</a
@@ -238,7 +411,10 @@
                 />
               </div>
             </form>
-            <ul class="md:flex-col md:min-w-full flex flex-col list-none">
+            <ul 
+            class="md:flex-col md:min-w-full flex flex-col list-none"
+            id="ulMenu"
+            >
               <li class="items-center">
                 <a
                   class="text-blueGray-700 hover:text-blueGray-500 text-xs uppercase py-3 font-bold block"
@@ -271,14 +447,6 @@
                   Registrati
                   </a
                 >
-              </li>
-              <li class="items-center">
-                <a
-                  class="text-blueGray-700 hover:text-blueGray-500 text-xs uppercase py-3 font-bold block"
-                  href="opzioni.html"
-                  ><i class="fas fa-tools text-blueGray-400 mr-2 text-sm"></i>
-                  Opzioni (solo admin)
-                  </a>
               </li>
             </ul>
             <hr class="my-4 md:min-w-full" />
@@ -325,7 +493,7 @@
             <ul
               class="flex-col md:flex-row list-none items-center hidden md:flex"
             >
-              <a class="text-blueGray-500 block" href="#pablo" onclick="openDropdown(event,'user-dropdown')">
+              <a class="text-blueGray-500 block" href="#pablo" onclick="apriUserMenu(event,'user-dropdown')">
                 <div class="items-center flex">
                   <span
                     class="w-12 h-12 text-xl text-white bg-blueGray-200 inline-flex items-center justify-center rounded-full"
@@ -336,16 +504,19 @@
                   </span>
                 </div>
               </a>
+              <span class="ml-5 text-white text-xl">Ciao <br><span id="spanSaluto"></span>!</span>
               <div
                 class="hidden bg-white text-base z-50 float-left py-2 list-none text-left rounded shadow-lg mt-1"
                 style="min-width: 12rem;"
                 id="user-dropdown"
               >
                 <a
-                  href="#pablo"
                   class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
-                  >Action</a
-                ><a
+                  onclick="disconetti()"
+                  >
+                  Disconetti
+                </a>
+                <a
                   href="#pablo"
                   class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
                   >Another action</a
