@@ -60,8 +60,26 @@
         $('#' + dropdownID).classList().toggle("block")
       }
 
+      /*funzione per far comparire/scomparire la descrizione dei prodotti*/
+      function mostraNascondi()
+      {
+        $(".art").hide();
+        $(".descrizione").click(function() // anche se clicco sulla scritta e non sulla fraccia l'articolo si apre
+        {
+          if($(this).next().css("display") == "none")
+          {
+            $(".freccia").children().attr("class", "fas fa-arrow-circle-up")
+          }
+          else
+          {
+            $(".freccia").children().attr("class", "fas fa-arrow-circle-down")
+          }
+          $(this).next().toggle(250)
+        })
+      }
+
       /* generare un prodotto in base ai dati */
-      function prodottoToHTML(tipoProdotto, nomeProdotto, prezzo, pezziDisponibili)
+      function prodottoToHTML(tipoProdotto, nomeProdotto, prezzo, pezziDisponibili, descrizione)
       {
         var toHtmlString =  '<div class="w-full lg:w-6/12 xl:w-3/12 px-4 pt-6">'
         toHtmlString +=       '<div class="relative flex flex-col min-w-0 break-words bg-white rounded mb-6 xl:mb-0 shadow-lg">'
@@ -74,22 +92,48 @@
         toHtmlString +=               '<h5 class="text-black uppercase font-bold text-xl">'
         toHtmlString +=                 nomeProdotto
         toHtmlString +=               '</h5>'
-        toHtmlString +=               '<span class="font-semibold text-xl text-blueGray-700">'
+        toHtmlString +=               '<span class="mb-2 font-semibold text-xl text-blueGray-700">'
         toHtmlString +=                 prezzo
         toHtmlString +=               '</span> €'
         toHtmlString +=             '</div>'
         toHtmlString +=             '<div class="relative w-auto pl-4 flex-initial">'
         
           // da vedere se sostituire con una immagine
-        toHtmlString +=             '<div class="text-white p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-lightBlue-500">'
-        toHtmlString +=               '<i class="fas fa-mouse"></i>'
+        toHtmlString +=             '<div class="text-black p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-lightBlue-500">'
+        
+        if(tipoProdotto.toLowerCase() == "mouse")
+        {
+          toHtmlString += '<i class="fas fa-mouse"></i>'
+        }
+        else if(tipoProdotto.toLowerCase() == "tastiere")
+        {
+          toHtmlString += '<i class="fas fa-keyboard"></i>'
+        }
+        else if(tipoProdotto.toLowerCase() == "monitor")
+        {
+          toHtmlString += '<img src="img/ico-monitor.svg">'
+        }
+        else if(tipoProdotto.toLowerCase() == "archiviazione")
+        {
+          toHtmlString += '<i class="fas fa-database"></i>'
+        }
+        else if(tipoProdotto.toLowerCase() == "cablaggio")
+        {
+          toHtmlString += '<i class="fas fa-network-wired"></i>'
+        }
+        else
+        {
+          toHtmlString += '<img src="img/ico-chip.png">'
+        }
+        
         toHtmlString +=             '</div>'
         
         toHtmlString +=           '</div>'
         toHtmlString +=         '</div>'
         toHtmlString +=         '<p class ="inputNumberAdmin"></p>'
+        toHtmlString +=         '<p class ="utenteAggiungi"></p>'
         toHtmlString +=         '<p class="text-sm text-blueGray-400 mt-4">'
-        toHtmlString +=           '<span class="'
+        toHtmlString +=           '<span class="text-l '
         toHtmlString +=             pezziDisponibili > 0 ? ('text-green-600') : ('text-red-500')
         toHtmlString +=            '">'
         toHtmlString +=              pezziDisponibili
@@ -98,6 +142,12 @@
         toHtmlString +=            ' pezzi disponibili'
         toHtmlString +=          '</span>'
         toHtmlString +=         '</p>'
+        toHtmlString +=         '<ul class = "descrizione mt-5 font-bold">'
+        toHtmlString +=           '<li class="freccia cursor-pointer hover:text-gray-600"> <i class="fas fa-arrow-circle-down"></i> Descrizione</li>'
+        toHtmlString +=         '</ul>'
+        toHtmlString +=       '<article class="art">'
+        toHtmlString +=         descrizione
+        toHtmlString +=       '</article>'
         toHtmlString +=       '</div>'
         toHtmlString +=      '</div>'
         toHtmlString +=    '</div>'
@@ -119,17 +169,23 @@
 
       function caricamentoPagina()
       {
+        $('#bottoneAggiungiProdotto').hide()
+        $('#registraProdotto').hide()
+
         // converto l'oggetto e i suoi figli negli oggetti specifici
         magazzino = Magazzino.parse(magazzinoJSON)
 
         //vado a inserire ogni elemento nell'html
         magazzino.prodotti.forEach((item, i) => 
         {
-          var prodottoDaInserire = prodottoToHTML(item.categoria, item.nomeProdotto, item.prezzoSenzaIva, magazzino.quantitaMagazzino[i])
+          var prodottoDaInserire = prodottoToHTML(item.categoria, item.nomeProdotto, item.prezzoSenzaIva, magazzino.prodotti[i].quantita, item.descrizioneProdotto)
           $('#areaArticoli').append(prodottoDaInserire)
         })
 
         utenteAccesso = Utente.parse(localStorage.getItem('utenteAccesso'))
+
+        /*nasconde le descrizioni dei prodotti*/
+        mostraNascondi()
         
 
         var opzioniAdmin = `<li class="items-center">
@@ -146,7 +202,8 @@
         {
           $("#ulMenu").append(opzioniAdmin)
         }
-      
+        else
+          aggiungiOpzioniUtente()
 
         document.getElementById('spanSaluto').innerHTML = utenteAccesso.username
 
@@ -163,31 +220,14 @@
         /* modifico la funzione del bottone delle opzioni */
         $('#opzioniAdmin').attr("onclick", "togliOpzioniAdmin()")
 
-        /* aggiungo la casella per aggiungere un prodotto al magazzino */
-        $("#areaArticoli").append
-        (
-          `
-          <div class="w-full lg:w-6/12 xl:w-3/12 px-4 pt-6" id="bottoneAggiungi">
-            <div class="relative flex flex-col min-w-0 break-words bg-white rounded mb-6 xl:mb-0 shadow-lg">
-              <div class="flex-auto p-4">
-                <div class="flex flex-wrap">
-                  <div class="relative w-auto pl-4 flex-initial">
-                    <i class="fas fa-plus text-blueGray-400 mr-2 text-2xl"></i>
-                    <span class="uppercase text-xs font-bold"> Aggiungi un  nuovo prodotto </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          `
-        )
-
+        /* rendo visibile la casella per aggiungere un prodotto al magazzino */
+        $("#bottoneAggiungiProdotto").toggle(500)
 
         /* aggiungo le opzioni di modifica sui singoli prodotti */
         $(".inputNumberAdmin").append
         (
           `
-          <hr class="my-4 md:min-w-full" ></hr>
+          <hr class="mt-5 mb-5 md:min-w-full" ></hr>
           <input 
             type="number" 
             class="btn mt-3"
@@ -215,13 +255,24 @@
 
       }
 
+      function aggiungiOpzioniUtente()
+      {
+          $('.utenteAggiungi').append(
+            
+            `
+            <button type="button" onclick="aggiungiAlCarrello()">Aggiungi al carrello</button>
+
+            `
+          )
+      }
+
       function togliOpzioniAdmin()
       {
         /* modifico la funzione del bottone delle opzioni */
         $('#opzioniAdmin').attr("onclick", "aggiungiOpzioniAdmin()")
 
         /* rimuovo tutte le opzioni che sono state create da aggiungiOpzioniAdmin */
-        $('#bottoneAggiungi').remove()
+        $('#bottoneAggiungiProdotto').toggle(500)
         $(".inputNumberAdmin").children().remove()
       }
 
@@ -239,7 +290,7 @@
         }
         else
         {
-          if(Math.abs(numeroInput) <= magazzino.quantitaMagazzino[magazzino.trovaIndice(nomeProdottoCorrente)])
+          if(Math.abs(numeroInput) <= magazzino.prodotti[magazzino.trovaIndice(nomeProdottoCorrente)].quantita)
           {
             for(var i = 0 ; i < Math.abs(numeroInput) ; i++)
             {
@@ -267,11 +318,12 @@
 					}
 				})
 
-
+        
         if(confirm("Hai appena apportato delle modifiche al magazzino. Vuoi ricaricare la pagina per visualizzarle?"))
         {
           window.location = "shop.html"
         }
+        
       }
 
       function eliminaProdotto(obj)
@@ -294,20 +346,69 @@
               window.location = "shop.html"
             }
           })
+
+          if(confirm("Hai appena apportato delle modifiche al magazzino. Vuoi ricaricare la pagina per visualizzarle?"))
+          {
+            window.location = "shop.html"
+          }
         }
-          
+      }
+      
+      function aggiungiProdotto()
+      {
+        window.scrollTo(0,140)
+        $('#prodottiPagina').toggle()
+        $('#registraProdotto').toggle()
         
+        document.formProdotto.nomeProdotto.focus()
+      }
+
+      function chiudiCreazioneProdotto()
+      {
+        $('#registraProdotto').toggle()
+        $('#prodottiPagina').toggle()
+        window.scrollTo(0,0)
+      }
+
+      function checkProdotto()
+      {
+        let nomeProdotto = document.formProdotto.nomeProdotto.value
+        let prezzoSenzaIva = document.formProdotto.prezzoSenzaIva.value
+        let categoria = document.formProdotto.categoria.value
+        let descrizioneProdotto = document.formProdotto.descrizione
+        let quantita = document.formProdotto.quantita.value
+        
+        if(magazzino.prodotti.some((item) => {return item.nomeProdotto == nomeProdotto }))
+        {
+          console.error("E' già presente un prodotto con questo nome")
+        }
+        else
+        {
+          var nuovoProdotto = new Prodotto(nomeProdotto, prezzoSenzaIva, categoria, descrizioneProdotto, quantita)
+          magazzino.prodotti.push(nuovoProdotto)
+          document.formProdotto.reset()
+          window.scrollTo(0,0)
+          document.formProdotto.nomeProdotto.focus()
+
+        }
       }
       
       function disconnetti()
       {
-        console.log("questa funzione dovrebbe esseguire il log out")
+        localStorage.removeItem('utenteAccesso')
+
+        if(confirm("Stai per disconetterti. Continuare?"))
+        {
+          window.location = "index.html"
+        }
       }
 
     </script>
   </head>
   <body class="text-blueGray-700 antialiased">
+
     <div id="root">
+
       <nav
         class="md:left-0 md:block md:fixed md:top-0 md:bottom-0 md:overflow-y-auto md:flex-row md:flex-nowrap md:overflow-hidden shadow-xl bg-white flex flex-wrap items-center justify-between relative md:w-64 z-10 py-4 px-6"
       >
@@ -350,28 +451,41 @@
                 style="min-width: 12rem;"
                 id="user-responsive-dropdown"
               >
-                <a
-                class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
-                onclick="disconnetti()"
-                >
-                  Disconetti
-                </a>
+              
+
+
+                <span class="uppercase m-5">Il tuo account</span>
+                <div class="h-0 my-2 border border-solid border-blueGray-100"></div>
                 
                 <a
-                  href="#pablo"
-                  class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
-                  >Another action</a
-                ><a
-                  href="#pablo"
-                  class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
-                  >Something else here</a
-                >
-                <div class="h-0 my-2 border border-solid border-blueGray-100"></div>
+                  class="cursor-pointer text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
+                  href="carrello.html"
+                  >
+                  <i class="fas fa-shopping-cart"></i>
+                  Carrello
+                </a>
+
+
                 <a
                   href="#pablo"
                   class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
-                  >Seprated link</a
                 >
+                  <i class="fas fa-info-circle"></i>
+                  Info  
+                </a
+                >
+
+
+                <div class="h-0 my-2 border border-solid border-blueGray-100"></div>
+                
+
+                <a
+                  class="hover:text-red-500 cursor-pointer text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
+                  onclick="disconnetti()"
+                  >
+                  <i class="fas fa-power-off"></i>
+                  Disconnetti
+                </a>
               </div>
             </li>
           </ul>
@@ -426,14 +540,6 @@
               <li class="items-center">
                 <a
                   class="text-blueGray-700 hover:text-blueGray-500 text-xs uppercase py-3 font-bold block"
-                  href="carrello.html"
-                  ><i class="fas fa-shopping-cart text-blueGray-400 mr-2 text-sm"></i>
-                  Carrello</a
-                >
-              </li>
-              <li class="items-center">
-                <a
-                  class="text-blueGray-700 hover:text-blueGray-500 text-xs uppercase py-3 font-bold block"
                   href="login.html"
                   ><i class="fas fa-fingerprint text-blueGray-400 mr-2 text-sm"></i>
                   Accedi</a
@@ -454,15 +560,15 @@
         </div>
       </nav>
 
-
       <div class="relative md:ml-64 bg-blueGray-50">
         
-        
         <nav
+          id="navHeader"
           class="absolute top-0 left-0 w-full z-10 bg-transparent md:flex-row md:flex-nowrap md:justify-start flex items-center p-4"
         >
           <div
             class="w-full mx-autp items-center flex justify-between md:flex-nowrap flex-wrap md:px-10 px-4"
+            
           >
             <a
               class="text-white text-sm uppercase hidden lg:inline-block font-semibold"
@@ -510,37 +616,66 @@
                 style="min-width: 12rem;"
                 id="user-dropdown"
               >
-                <a
-                  class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
-                  onclick="disconetti()"
-                  >
-                  Disconetti
-                </a>
-                <a
-                  href="#pablo"
-                  class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
-                  >Another action</a
-                ><a
-                  href="#pablo"
-                  class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
-                  >Something else here</a
-                >
+                <span class="uppercase m-5">Il tuo account</span>
                 <div class="h-0 my-2 border border-solid border-blueGray-100"></div>
+                
+                <a
+                  class="cursor-pointer text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
+                  href="carrello.html"
+                  >
+                  <i class="fas fa-shopping-cart"></i>
+                  Carrello
+                </a>
+
+
                 <a
                   href="#pablo"
                   class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
-                  >Seprated link</a
                 >
+                  <i class="fas fa-info-circle"></i>
+                  Info  
+                </a
+                >
+
+
+                <div class="h-0 my-2 border border-solid border-blueGray-100"></div>
+                
+
+                <a
+                  class="hover:text-red-500  cursor-pointer text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
+                  onclick="disconnetti()"
+                  >
+                  <i class="fas fa-power-off"></i>
+                  Disconnetti
+                </a>
+
+
+
               </div>
             </ul>
           </div>
         </nav>
 
-
+        
         
         <div class="relative bg-blue-600 md:pt-32 pb-32 pt-12">
-          <div class="px-4 md:px-10 mx-auto w-full">
+
+
+          
+
+
+          <div class="px-4 md:px-10 mx-auto w-full" id="prodottiPagina">
             <div>
+              <div 
+              id="bottoneAggiungiProdotto"
+              class="flex items-end items-center right-0 m-5 p-2 justify-end bg-secondary-100 text-secondary-200 uppercase font-bold rounded-full">
+                <span>Aggiungi prodotto</span>
+                <div
+                class="ml-3 cursor-pointer  text-white text-l p-3 text-center inline-flex items-center justify-center w-8 h-8 shadow-lg rounded-full bg-green-500 hover:bg-white hover:text-green-500 transition ease-out duration-500"
+                onclick="aggiungiProdotto()">
+                  <i class="fas fa-plus"></i>
+                </div>
+              </div>
               <!-- I prodotti qui -->
               <div class="flex flex-wrap" id="areaArticoli">
             
@@ -582,6 +717,158 @@
               </div>
             </div>
           </div>
+
+
+
+          <div id = "registraProdotto">
+            <div class="w-full lg\:w-12 xl:w-full px-4 pt-6">
+              <div class="relative flex flex-col min-w-0 break-words bg-white rounded mb-6 xl:mb-0 shadow-lg">
+                
+                <div class="flex items-end right-0 m-5 p-2 justify-end bg-secondary-100 text-secondary-200 uppercase font-bold rounded-full">
+                  <div 
+                  class="cursor-pointer  text-white text-3xl p-3 text-center inline-flex items-center justify-center w-8 h-8 shadow-lg rounded-full bg-red-500 hover:bg-white hover:text-red-500 transition ease-out duration-500"
+                  
+                  
+                  onclick="chiudiCreazioneProdotto()">
+                    <i class="fas fa-x">×</i>
+                  </div>
+                </div>
+
+
+                <div class="flex-auto p-4">
+
+                    
+
+                    <div class="relative w-auto pl-4 flex-initial">
+                      
+                      <span class="uppercase text-2xl font-bold max-w-2xl"> Inserisci le informazioni del tuo prodotto </span>
+                      
+                      
+
+                      <form
+                      name="formProdotto"
+                      method="post"
+                      action="shop.html"
+                      onsubmit="checkProdotto(); return false"
+                      >
+
+                        <div class="relative w-full mb-3 mt-8">
+                          <label
+                          class="block uppercase text-gray-700 text-xs font-bold mb-2"
+                          for="nomeProdotto"
+                          >
+                            Nome prodotto
+                          </label>
+
+                          <input
+                          type="text"
+                          class="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
+                          placeholder="Nome del prodotto"
+                          style="transition: all 0.15s ease 0s;"
+                          required
+                          autofocus
+                          name="nomeProdotto"
+                          />
+                        </div>
+
+
+                        <div class="relative w-full mb-3">
+                          <label
+                          class="block uppercase text-gray-700 text-xs font-bold mb-2"
+                          for="categoria"
+                          >
+                            Categoria
+                          </label>
+
+                          <select
+                          class="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
+                          style="transition: all 0.15s ease 0s;"
+                          required
+                          name = "categoria"
+                          >
+                            <option value="" selected disabled >Categoria del prodotto</option>
+                            <option value="tastiere">Tastiere</option>
+                            <option value="mouse">Mouse</option>
+                            <option value="schedeVideo">Schede Video</option>
+                            <option value="schedeMadre">Schede Madre</option>
+                            <option value="cablaggio">Cablaggio</option>
+                            <option value="ram">Banchi RAM</option>
+                            <option value="monitor">Monitor</option>
+                            <option value="archiviazione">Achiviazione</option>
+                          </select>
+                        </div>
+
+                        <div class="relative w-full mb-3">
+                          <label
+                          class="block uppercase text-gray-700 text-xs font-bold mb-2"
+                          for="prezzoSenzaIva"
+                          >
+                            Prezzo senza iva
+                          </label>
+
+                          <input
+                          type="number"
+                          step="0.01"
+                          class="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
+                          placeholder="Prezzo imponibile del prodotto"
+                          style="transition: all 0.15s ease 0s;"
+                          required
+                          name="prezzoSenzaIva"
+                          />
+                        </div>
+
+                        <div class="relative w-full mb-3">
+                          <label
+                          class="block uppercase text-gray-700 text-xs font-bold mb-2"
+                          for="quantita"
+                          >
+                            Quantità
+                          </label>
+
+                          <input
+                          type="number"
+                          class="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
+                          placeholder="Prezzo imponibile del prodotto"
+                          style="transition: all 0.15s ease 0s;"
+                          required
+                          name="quantita"
+                          />
+                        </div>
+
+                        <div class="relative w-full mb-3">
+                          <label
+                          class="block uppercase text-gray-700 text-xs font-bold mb-2"
+                          for="descrizione"
+                          >
+                            Descrizione
+                          </label>
+
+                          <textarea
+                            rows="4"
+                            cols="80"
+                            class="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
+                            placeholder="Descrizione del prodotto"
+                            name="descrizione"
+                          ></textarea>
+                        </div>
+
+                        <div class="text-center mt-6">
+                          <button
+                          class="bg-gray-900 text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+                          type="submit"
+                          style="transition: all 0.15s ease 0s;"
+                          >
+                          Aggiungi
+                          </button>
+                        </div>
+
+                      </form>
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
         
 

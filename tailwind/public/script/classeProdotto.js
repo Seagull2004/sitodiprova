@@ -5,23 +5,25 @@ class Prodotto
 
     #nomeProdotto
     #prezzoSenzaIva
-    #categoria // tastiera, monitor, mouse, schede video, schede madre, banchi RAM, cablaggio, unità di archiviazione
+    #categoria // tastiera, monitor, mouse, schede video, schede madre, ram, cablaggio, archiviazione
     #descrizioneProdotto
+    #quantita
 
     // Costruttori e metodi statici ------------------------------------------------------------------------------------------------------------------------------------------------
 
-    constructor(nomeProdotto, prezzoSenzaIva, categoria, descrizioneProdotto)
+    constructor(nomeProdotto, prezzoSenzaIva, categoria, descrizioneProdotto, quantita)
     {
         this.#nomeProdotto = nomeProdotto
         this.#categoria = categoria
         this.#prezzoSenzaIva = prezzoSenzaIva
         this.#descrizioneProdotto = descrizioneProdotto
+        this.#quantita = quantita
     }
 
     // attraverso le informazioni di un oggetto ne crea uno di tipo Prodotto
     static toProdotto(oggetto)
     {
-        return new Prodotto(oggetto.nomeProdotto, oggetto.prezzoSenzaIva, oggetto.categoria, oggetto.descrizioneProdotto)
+        return new Prodotto(oggetto.nomeProdotto, oggetto.prezzoSenzaIva, oggetto.categoria, oggetto.descrizioneProdotto, oggetto.quantita)
     }
     
     // Getter ------------------------------------------------------------------------------------------------------------------------------------------------
@@ -46,11 +48,21 @@ class Prodotto
         return this.#descrizioneProdotto
     }
 
+    get quantita()
+    {
+        return this.#quantita
+    }
+
     // Setter ------------------------------------------------------------------------------------------------------------------------------------------------
 
     set prezzoSenzaIva(prezzoSenzaIva)
     {
         this.#prezzoSenzaIva = prezzoSenzaIva
+    }
+
+    set quantita(quantita)
+    {
+        this.#quantita = quantita
     }
 
     //Metodi------------------------------------------------------------------------------------------------------------------------------------------------
@@ -61,6 +73,7 @@ class Prodotto
         out += "prezzo senza iva: " + this.#prezzoSenzaIva + " \n"
         out += "categoria: " + this.#categoria + " \n"
         out += "descrizione: " + this.#descrizioneProdotto + " \n"
+        out += "quantità: " + this.#quantita + " \n"
         return out
     }
     
@@ -71,7 +84,8 @@ class Prodotto
                 ['nomeProdotto']: this.#nomeProdotto,
                 ['prezzoSenzaIva']: this.#prezzoSenzaIva,
                 ['categoria']: this.#categoria,
-                ['descrizioneProdotto']: this.#descrizioneProdotto
+                ['descrizioneProdotto']: this.#descrizioneProdotto,
+                ['quantita']: this.#quantita
             }
         )
     }
