@@ -21,146 +21,21 @@
       rel="stylesheet"
       href="style/styles.css"
     >
+
+    <!-- librerie e framework -->
     <script src="librerie/popper.min.js"></script>
     <script src="librerie/jquerymin.js"></script>
-    <script>
-
-      /* funzione per jQuery che ricava la classList di un elemento */
-      $.fn.classList = function()
-      {
-        return this[0].classList
-      }
-
-      /* Nav menù responsive */
-      function toggleNavbar(collapseID) 
-      {
-        $('#' + collapseID).classList().toggle("hidden")
-        $('#' + collapseID).classList().toggle("bg-white")
-        $('#' + collapseID).classList().toggle("m-2")
-        $('#' + collapseID).classList().toggle("py-3")
-        $('#' + collapseID).classList().toggle("px-6")
-      }
-
-      /* Menù a tendina per icona utente */
-      function apriUserMenu(event, dropdownID) 
-      {
-        let element = event.target
-
-        while (element.nodeName !== "A") 
-        {
-          element = element.parentNode
-        }
-
-        var popper = Popper.createPopper(element, document.getElementById(dropdownID),
-        {
-          placement: "bottom-end"
-        })
-
-        $('#' + dropdownID).classList().toggle("hidden")
-        $('#' + dropdownID).classList().toggle("block")
-      }
-
-      /*funzione per far comparire/scomparire la descrizione dei prodotti*/
-      function mostraNascondi()
-      {
-        $(".art").hide();
-        $(".descrizione").click(function() // anche se clicco sulla scritta e non sulla fraccia l'articolo si apre
-        {
-          if($(this).next().css("display") == "none")
-          {
-            $(".freccia").children().attr("class", "fas fa-arrow-circle-up")
-          }
-          else
-          {
-            $(".freccia").children().attr("class", "fas fa-arrow-circle-down")
-          }
-          $(this).next().toggle(250)
-        })
-      }
-
-      /* generare un prodotto in base ai dati */
-      function prodottoToHTML(tipoProdotto, nomeProdotto, prezzo, pezziDisponibili, descrizione)
-      {
-        var toHtmlString =  '<div class="w-full lg:w-6/12 xl:w-3/12 px-4 pt-6">'
-        toHtmlString +=       '<div class="relative flex flex-col min-w-0 break-words bg-white rounded mb-6 xl:mb-0 shadow-lg">'
-        toHtmlString +=         '<div class="flex-auto p-4">'
-        toHtmlString +=           '<div class="flex flex-wrap">'
-        toHtmlString +=             '<div class="relative w-full pr-4 max-w-full flex-grow flex-1">'
-        toHtmlString +=               '<h3 class="text-blueGray-400 uppercase font-bold text-xs">#'
-        toHtmlString +=                 tipoProdotto
-        toHtmlString +=               '</h3>'
-        toHtmlString +=               '<h5 class="text-black uppercase font-bold text-xl">'
-        toHtmlString +=                 nomeProdotto
-        toHtmlString +=               '</h5>'
-        toHtmlString +=               '<span class="mb-2 font-semibold text-xl text-blueGray-700">'
-        toHtmlString +=                 prezzo
-        toHtmlString +=               '</span> €'
-        toHtmlString +=             '</div>'
-        toHtmlString +=             '<div class="relative w-auto pl-4 flex-initial">'
-        
-          // da vedere se sostituire con una immagine
-        toHtmlString +=             '<div class="text-black p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-lightBlue-500">'
-        
-        if(tipoProdotto.toLowerCase() == "mouse")
-        {
-          toHtmlString += '<i class="fas fa-mouse"></i>'
-        }
-        else if(tipoProdotto.toLowerCase() == "tastiere")
-        {
-          toHtmlString += '<i class="fas fa-keyboard"></i>'
-        }
-        else if(tipoProdotto.toLowerCase() == "monitor")
-        {
-          toHtmlString += '<img src="img/ico-monitor.svg">'
-        }
-        else if(tipoProdotto.toLowerCase() == "archiviazione")
-        {
-          toHtmlString += '<i class="fas fa-database"></i>'
-        }
-        else if(tipoProdotto.toLowerCase() == "cablaggio")
-        {
-          toHtmlString += '<i class="fas fa-network-wired"></i>'
-        }
-        else
-        {
-          toHtmlString += '<img src="img/ico-chip.png">'
-        }
-        
-        toHtmlString +=             '</div>'
-        
-        toHtmlString +=           '</div>'
-        toHtmlString +=         '</div>'
-        toHtmlString +=         '<p class ="inputNumberAdmin"></p>'
-        toHtmlString +=         '<p class ="utenteAggiungi"></p>'
-        toHtmlString +=         '<p class="text-sm text-blueGray-400 mt-4">'
-        toHtmlString +=           '<span class="text-l '
-        toHtmlString +=             pezziDisponibili > 0 ? ('text-green-600') : ('text-red-500')
-        toHtmlString +=            '">'
-        toHtmlString +=              pezziDisponibili
-        toHtmlString +=           '</span>'
-        toHtmlString +=           '<span class="whitespace-nowrap">'
-        toHtmlString +=            ' pezzi disponibili'
-        toHtmlString +=          '</span>'
-        toHtmlString +=         '</p>'
-        toHtmlString +=         '<ul class = "descrizione mt-5 font-bold">'
-        toHtmlString +=           '<li class="freccia cursor-pointer hover:text-gray-600"> <i class="fas fa-arrow-circle-down"></i> Descrizione</li>'
-        toHtmlString +=         '</ul>'
-        toHtmlString +=       '<article class="art">'
-        toHtmlString +=         descrizione
-        toHtmlString +=       '</article>'
-        toHtmlString +=       '</div>'
-        toHtmlString +=      '</div>'
-        toHtmlString +=    '</div>'
-
-        return toHtmlString
-      }
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.1/howler.min.js"></script>
+    <!-- database e classi -->
     <script src="database/magazzinoJSON.json"></script>
+    <script src="database/utentiJSON.json"></script>
     <script src="script/classeProdotto.js"></script>
     <script src="script/classeMagazzino.js"></script>
     <script src="script/classeCarrello.js"></script>
     <script src="script/classeUtente.js"></script>
     <script src="script/classeAmministratore.js"></script>
+    <!-- script funzionali-->
+    <script src="script/shopScriptFunzionale.js"></script>
     <script>
       var magazzino
       var utenteAccesso
@@ -169,44 +44,78 @@
 
       function caricamentoPagina()
       {
+        /* Nascondo parti dell'html che verranno visualizzate in un secondo momento*/
         $('#bottoneAggiungiProdotto').hide()
         $('#registraProdotto').hide()
 
-        // converto l'oggetto e i suoi figli negli oggetti specifici
+        /* converto l'oggetto e i suoi figli negli oggetti specifici */
         magazzino = Magazzino.parse(magazzinoJSON)
 
-        //vado a inserire ogni elemento nell'html
+
+        /* vado a inserire ogni prodotto nell'html */
         magazzino.prodotti.forEach((item, i) => 
         {
-          var prodottoDaInserire = prodottoToHTML(item.categoria, item.nomeProdotto, item.prezzoSenzaIva, magazzino.prodotti[i].quantita, item.descrizioneProdotto)
-          $('#areaArticoli').append(prodottoDaInserire)
+          $('#areaArticoli').append(item.toHTML())
         })
 
+        /* memorizzo in utenteAccesso le informazioni sull'utente che ha eseguito l'accesso */
         utenteAccesso = Utente.parse(localStorage.getItem('utenteAccesso'))
 
-        /*nasconde le descrizioni dei prodotti*/
-        mostraNascondi()
+        /* nasconde le descrizioni dei prodotti */
+        mostraNascondiDescrizione()
         
 
+        /* Creo un elemento che attiva delle impostazioni avanzati e lo aggiungo solo se l'utente che ha fatto l'accesso è un admin */
         var opzioniAdmin = `<li class="items-center">
                               <a
                                 class="text-blueGray-700 hover:text-blueGray-500 text-xs uppercase py-3 font-bold block cursor-pointer"
                                 onclick = "aggiungiOpzioniAdmin()"
                                 id ="opzioniAdmin"
-                                ><i class="fas fa-tools text-blueGray-400 mr-2 text-sm"></i>
-                                Opzioni
+                                >
+                                  <i class="fas fa-tools text-blueGray-400 mr-2 text-sm"></i>
+                                  Opzioni
                                 </a>
                             </li>`
-              
         if(utenteAccesso instanceof Amministratore)
         {
           $("#ulMenu").append(opzioniAdmin)
         }
         else
+        {
           aggiungiOpzioniUtente()
+        }
+          
 
+        /* Aggiungo il saluto all'utente nella pagina in base all'utenteAccesso */
         document.getElementById('spanSaluto').innerHTML = utenteAccesso.username
 
+
+        /* Aggiorno il numero massimo disponibile dello spinner di ogni prodotto */
+        $(".spinnerProdotto").each(function()
+        {
+          var nomeProdottoCorrente = this.parentNode.parentNode.children[0].children[0].children[1].innerHTML
+          var disponibilitaProdottoCorrente = magazzino.prodotti[magazzino.trovaIndice(nomeProdottoCorrente)].quantita
+          
+          $(this).attr("max", disponibilitaProdottoCorrente)
+        })
+
+
+        /* Genero sfumatura al caricamento della pagina */
+        $(function()
+        {
+						$('body').fadeIn(500)
+            
+
+
+
+						setTimeout(function()
+            {
+							$('body').fadeOut(1000, function()
+              {
+								location.reload(true)
+							})
+						}, 60000)
+				})
       }
 
       function aggiungiOpzioniAdmin()
@@ -260,8 +169,22 @@
           $('.utenteAggiungi').append(
             
             `
-            <button type="button" onclick="aggiungiAlCarrello()">Aggiungi al carrello</button>
+            <button
+            class="mt-5 btn text-white bg-green-600 ml-2 md:border-2 hover:bg-white hover:text-green-600 transition ease-out duration-500" 
+            onclick="aggiungiAlCarrello(this)"
+            >
+              Aggiungi al carrello
+            </button>
 
+            <input
+            type="number"
+            min="1"
+            step="1"
+            value="1"
+            class="spinnerProdotto mt-1 btn text-black ml-2 border-black md:border-2" 
+            >
+
+            </input>
             `
           )
       }
@@ -403,9 +326,66 @@
         }
       }
 
+      function aggiungiAlCarrello(obj)
+      {
+        var nomeProdottoCorrente = obj.parentNode.parentNode.children[0].children[0].children[1].innerHTML
+        var quantitaProdottoCorrente = obj.nextElementSibling.value
+
+
+        /* leggo l'oggetto che contiene tutti gli utenti */
+		  	var utenti = JSON.parse(utentiJSON)
+        utenti = utenti.map((item) => 
+        {
+          return Utente.parse(item)
+        })
+
+
+        utenti = utenti.map(function(item, i)
+        {
+          if(item.username == utenteAccesso.username)
+          {
+            utenteAccesso = item
+            utenteAccesso.carrello.aggiungiProdotto(nomeProdottoCorrente, parseInt(quantitaProdottoCorrente), magazzino)
+            return utenteAccesso
+          }
+          else
+          {
+            return item
+          }
+        })
+
+
+        /* adesso salvo i database e il local storage */
+        
+        localStorage.setItem('utenteAccesso', utenteAccesso.stringify())
+
+				utenti = utenti.map(function(item, i)
+				{
+					return item.stringify()
+				})
+        
+				$.ajax({
+					data: {"content" : JSON.stringify(utenti)}, 
+					url: "php/aggiornaListaUtenti.php",
+					type: "POST",
+					success: function(data){
+						console.log("Registrazione eseguita con successo!")
+					}
+				})
+
+        
+        if(confirm("Hai appena apportato delle modifiche al carrello. Vuoi visualizzarlo?"))
+        {
+          window.location = "carrello.html"
+        }
+        else
+        {
+          window.location = "shop.html"
+        }
+      }
     </script>
   </head>
-  <body class="text-blueGray-700 antialiased">
+  <body class="text-blueGray-700 antialiased" style="display: none;">
 
     <div id="root">
 
@@ -534,7 +514,7 @@
                   class="text-blueGray-700 hover:text-blueGray-500 text-xs uppercase py-3 font-bold block"
                   href="shop.html"
                   ><i class="fas fa-home opacity-75 mr-2 text-sm"></i>
-                  Home</a
+                  Home (negozio)</a
                 >
               </li>
               <li class="items-center">
@@ -578,13 +558,13 @@
               src="img/logoW-1800x1800.png" 
               alt="logo" 
               style="width: 100px;"
-              class="hover:shadow-lg transition ease-out duration-300">
+              class="transform hover:scale-125 hover:bg-opacity-100 transition ease-out duration-300">
           
             </a>
             <form
               class="md:flex hidden flex-row flex-wrap items-center lg:ml-auto mr-3"
             >
-              <div class="relative flex w-full flex-wrap items-stretch">
+              <div class="relative flex w-full flex-wrap items-stretch hover:shadow-inner transform hover:scale-105 hover:bg-opacity-100 transition ease-out duration-300">
                 <span
                   class="z-10 h-full leading-snug font-normal absolute text-center text-blueGray-300 absolute bg-transparent rounded text-base items-center justify-center w-8 pl-3 py-3"
                   ><i class="fas fa-search"></i
@@ -604,7 +584,8 @@
                   <span
                     class="w-12 h-12 text-xl text-white bg-blueGray-200 inline-flex items-center justify-center rounded-full"
                     >
-                      <div class="text-gray-600 p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-white">
+                      <div 
+                      class="text-gray-600 p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-white hover:shadow-inner transform hover:scale-125 hover:bg-opacity-100 transition ease-out duration-300">
                         <i class="fas fa-user"></i>
                       </div>
                   </span>

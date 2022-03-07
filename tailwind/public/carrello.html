@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Il tuo carrello!</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <link 
+      rel="icon" 
+      href="img/icona-890x890.png"
+    >
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.css"
+    >
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    >
+    <link
+      rel="stylesheet"
+      href="style/styles.css"
+    >
+
+    <!-- librerie e framework -->
+    <script src="librerie/popper.min.js"></script>
+    <script src="librerie/jquerymin.js"></script>
+    <!-- database e classi -->
+    <script src="database/magazzinoJSON.json"></script>
+    <script src="database/utentiJSON.json"></script>
+    <script src="database/ordiniJSON.json"></script>
+    <script src="script/classeProdotto.js"></script>
+    <script src="script/classeMagazzino.js"></script>
+    <script src="script/classeCarrello.js"></script>
+    <script src="script/classeUtente.js"></script>
+    <script src="script/classeAmministratore.js"></script>
+    <script src="script/classeOrdine.js"></script>
+    <!-- script funzionali-->
+    <script src="script/shopScriptFunzionale.js"></script>
+    <script>
+        var magazzino
+        var utenteAccesso
+
+        window.onload = caricamentoPagina
+
+        function caricamentoPagina()
+        {
+            /* Nascondo parti dell'html che verranno visualizzate in un secondo momento*/
+            $('#bottoneAggiungiProdotto').hide()
+            $('#informazioniCliente').hide()
+
+            /* converto l'oggetto e i suoi figli negli oggetti specifici */
+            magazzino = Magazzino.parse(magazzinoJSON)
+
+
+            /* vado a inserire ogni prodotto nell'html */
+            utenteAccesso = Utente.parse(localStorage.getItem('utenteAccesso'))
+            if(utenteAccesso.carrello.arrayProdotti.length > 0)
+            {
+                utenteAccesso.carrello.arrayProdotti.forEach((item, i) => 
+                {
+                    $('#areaArticoli').append(item.toHTML())
+                })
+
+                $ ('#areaTotaleOrdine').append(
+                    `
+                    <div 
+                    class="text-white mt-10 text-3xl flex flex-col"
+                    >
+                        <span>Totale imponibile: ` + utenteAccesso.carrello.totaleSenzaIva + ` €</span>
+                        <button
+                        class="w-full mt-5 btn text-white bg-green-600 md:border-2 hover:bg-white hover:text-green-600 transition ease-out duration-500" 
+                        onclick="avviaOrdineTotlale()"
+                        >
+                            <i class="fas fa-money-check mr-2"></i>
+                            Procedi all'ordine
+                        </button>
+                    </div>
+                    `
+                )
+            }
+            else
+            {
+                $ ('#areaArticoli').append(
+                    `
+                    <div 
+                    class="w-full flex items-center text-white mt-10"
+                    >
+                        <span>Non hai ancora nessun prodotto nel carrello!</span>
+                        <i class="fas fa-sad-tear ml-3 text-yellow-500 text-3xl"></i>
+                    </div>
+                    `
+                )
+            }
+            
+
+            /* memorizzo in utenteAccesso le informazioni sull'utente che ha eseguito l'accesso */
+            utenteAccesso = Utente.parse(localStorage.getItem('utenteAccesso'))
+
+            /* nasconde le descrizioni dei prodotti */
+            mostraNascondiDescrizione()
+            
+
+            /* Creo un elemento che attiva delle impostazioni avanzati e lo aggiungo solo se l'utente che ha fatto l'accesso è un admin */
+            var opzioniAdmin = `<li class="items-center">
+                                <a
+                                    class="text-blueGray-700 hover:text-blueGray-500 text-xs uppercase py-3 font-bold block cursor-pointer"
+                                    onclick = "aggiungiOpzioniAdmin()"
+                                    id ="opzioniAdmin"
+                                    >
+                                    <i class="fas fa-tools text-blueGray-400 mr-2 text-sm"></i>
+                                    Opzioni
+                                    </a>
+                                </li>`
+            if(utenteAccesso instanceof Amministratore)
+            {
+            $("#ulMenu").append(opzioniAdmin)
+            }
+            else
+            {
+            aggiungiOpzioniUtente()
+            }
+            
+
+            /* Aggiungo il saluto all'utente nella pagina in base all'utenteAccesso */
+            document.getElementById('spanSaluto').innerHTML = utenteAccesso.username
+
+
+            /* Aggiorno il numero massimo disponibile dello spinner di ogni prodotto */
+            $(".spinnerProdotto").each(function()
+            {
+            var nomeProdottoCorrente = this.parentNode.parentNode.children[0].children[0].children[1].innerHTML
+            var disponibilitaProdottoCorrente = magazzino.prodotti[magazzino.trovaIndice(nomeProdottoCorrente)].quantita
+            
+            $(this).attr("max", disponibilitaProdottoCorrente)
+            })
+
+
+
+
+            /* Genero sfumatura al caricamento della pagina */
+            $(function()
+            {
+                $('body').fadeIn(500)
+                
+
+
+
+                setTimeout(function()
+                {
+                  $('body').fadeOut(1000, function()
+                  {
+                    location.reload(true)
+                  })
+                }, 60000)
+            })
+        }
+
+        function aggiungiOpzioniUtente()
+        {
+            $('.utenteAggiungi').append(
+                
+                `
+                <button
+                class="w-full mt-5 btn text-white bg-green-600 md:border-2 hover:bg-white hover:text-green-600 transition ease-out duration-500" 
+                onclick="avviaAcquistoProdottoSingolo(this)"
+                >
+                    <i class="fas fa-money-check mr-2"></i>
+                    Acquista prodotto
+                </button>
+
+                <button
+                class="w-full mt-5 btn text-white bg-red-600 md:border-2 hover:bg-white hover:text-red-600 transition ease-out duration-500" 
+                onclick="rimuovi(this)"
+                >
+                    <i class="fas fa-trash mr-2"></i>
+                    Rimuovi prodotto
+                </button>
+                `
+            )
+        }
+
+        function cambiaQuantita(obj)
+        {
+            var numeroInput = obj.previousElementSibling.value
+            var nomeProdottoCorrente = obj.parentNode.previousElementSibling.children[0].children[1].innerText;
+
+            if(numeroInput > 0)
+            {
+            for(var i = 0 ; i < numeroInput ; i++)
+            {
+                magazzino.incrementaQuantita(nomeProdottoCorrente)
+            }
+            }
+            else
+            {
+            if(Math.abs(numeroInput) <= magazzino.prodotti[magazzino.trovaIndice(nomeProdottoCorrente)].quantita)
+            {
+                for(var i = 0 ; i < Math.abs(numeroInput) ; i++)
+                {
+                magazzino.decrementaQuantita(nomeProdottoCorrente)
+                }
+            }
+            else
+            {
+                console.error("stai cercando di togliere troppi pezzi")
+                alert("stai cercando di togliere troppi pezzi")
+                obj.previousElementSibling.value = null
+                return -1
+            }
+            }
+
+            
+            /* apporto la modifica al file con php con le informzioni sul magazzino */
+                    $.ajax({
+                        data: {"content" : magazzino.stringify()}, 
+                        url: "php/aggiornaMagazzino.php",
+                        type: "POST",
+                        success: function(data){
+                            console.log(data)
+                            console.log("Aggiornamento file riuscito")            
+                        }
+                    })
+
+            
+            if(confirm("Hai appena apportato delle modifiche al magazzino. Vuoi ricaricare la pagina per visualizzarle?"))
+            {
+                window.location = "shop.html"
+            }
+            
+        }
+
+        function disconnetti()
+        {
+            localStorage.removeItem('utenteAccesso')
+
+            if(confirm("Stai per disconetterti. Continuare?"))
+            {
+            window.location = "index.html"
+            }
+        }
+
+        function rimuovi(obj)
+        {
+            let nomeProdottoCorrente = obj.parentNode.parentNode.children[0].children[0].children[1].innerText;
+            let quantitaProdottoCorrente = utenteAccesso.carrello.arrayProdotti[utenteAccesso.carrello.trovaIndice(nomeProdottoCorrente)].quantita
+            
+            utenteAccesso.carrello.eliminaProdotto(nomeProdottoCorrente, quantitaProdottoCorrente, magazzino)
+            
+            /* Salvo le modifiche sui database */
+            localStorage.setItem('utenteAccesso', utenteAccesso.stringify())
+
+
+            var utenti = JSON.parse(utentiJSON)
+            utenti = utenti.map((item) => 
+            {
+                return Utente.parse(item)
+            })
+            utenti = utenti.map(function(item, i)
+            {
+                if(item.username == utenteAccesso.username)
+                {
+                    return utenteAccesso
+                }
+                else
+                {
+                    return item
+                }
+            })
+            utenti = utenti.map(function(item, i)
+            {
+                return item.stringify()
+            })
+            $.ajax({
+                data: {"content" : JSON.stringify(utenti)}, 
+                url: "php/aggiornaListaUtenti.php",
+                type: "POST",
+                success: function(data){
+                    console.log("modifica file eseguita")
+                }
+            })
+            $.ajax({
+                data: {"content" : magazzino.stringify()}, 
+                url: "php/aggiornaMagazzino.php",
+                type: "POST",
+                success: function(data){
+                    console.log("modifica file eseguita")
+                }
+            })
+
+
+
+
+            if(confirm("Hai appena apportato delle modifiche al tuo carrello. Vuoi ricaricare la pagina per visualizzarle?"))
+            {
+                window.location = "carrello.html"
+            }
+
+        }
+   
+        function avviaAcquistoProdottoSingolo(obj)
+        {
+          var nomeProdottoCorrente = obj.parentNode.parentNode.children[0].children[0].children[1].innerText;
+          if(controllaPresenzaInformazioni())
+          {
+            var indiceCarrelloProdotto = utenteAccesso.carrello.trovaIndice(nomeProdottoCorrente)
+            var arrayProdotti = [utenteAccesso.carrello.arrayProdotti[indiceCarrelloProdotto]]
+            var numeroFattura = JSON.parse(ordiniJSON).length + 1
+            
+          
+            
+            var ordine = new Ordine(arrayProdotti, new Date(), utenteAccesso, numeroFattura)
+            
+            localStorage.setItem('ordine', ordine.stringify())
+
+            /*Rimuovo l'articolo acquistato dal carrello e lo metto nel vettore cronologiaAcquis*/
+            utenteAccesso.carrello.cronologiaAcquisti.push(indiceCarrelloProdotto)
+            utenteAccesso.carrello.arrayProdotti.splice(indiceCarrelloProdotto, 1)
+            
+            window.location = "fattura.html"
+          }
+          else
+          {
+            $('#informazioniCliente').toggle()
+            $('#prodottiPagina').hide()
+            window.scrollTo(0,140)
+          }
+        }
+
+        function avviaOrdineTotlale()
+        {
+          if(controllaPresenzaInformazioni())
+          {
+            var arrayProdotti = utenteAccesso.carrello.arrayProdotti
+            var numeroFattura = JSON.parse(ordiniJSON).length + 1 
+            
+            var ordine = new Ordine(arrayProdotti, new Date(), utenteAccesso, numeroFattura)
+            
+            localStorage.setItem('ordine', ordine.stringify())
+            
+            utenteAccesso.carrello.arrayProdotti.forEach(function(item, i)
+            {
+              utenteAccesso.carrello.cronologiaAcquisti.push(item)
+            })
+
+            utenteAccesso.carrello.arrayProdotti = []
+            
+
+            window.location = "fattura.html"
+          }
+          else
+          {
+            $('#informazioniCliente').toggle()
+            $('#prodottiPagina').hide()
+            window.scrollTo(0,140)
+          }
+        }
+
+
+
+        function chiudiAcquistoProdotto()
+        {
+          $('#informazioniCliente').toggle()
+            $('#prodottiPagina').toggle()
+            window.scrollTo(0,0)
+        }
+
+        function controllaPresenzaInformazioni()
+        {
+          if(utenteAccesso.nomeAzienda == "")
+          {
+            return false
+          }
+          else
+          {
+            return true
+          }
+        }
+
+        function checkAzienda()
+        {
+          var nomeAziendaCliente = document.formInformazioniAzienda.nomeAzienda.value
+          var indirizzoAziendaCliente = document.formInformazioniAzienda.indirizzoAzienda.value
+          var partitaIVAAziendaCliente = document.formInformazioniAzienda.partitaIva.value
+          var codiceFiscaleCliente = document.formInformazioniAzienda.codiceFiscale.value
+
+
+          utenteAccesso.nomeAzienda = nomeAziendaCliente
+          utenteAccesso.indirizzoAzienda = indirizzoAziendaCliente
+          utenteAccesso.partitaIva = partitaIVAAziendaCliente
+          utenteAccesso.codiceFiscale = codiceFiscaleCliente
+
+          console.log(nomeAziendaCliente)
+
+          localStorage.setItem('utenteAccesso', utenteAccesso.stringify())
+          
+          /* leggo l'oggetto che contiene tutti gli utenti */
+          var utenti = JSON.parse(utentiJSON)
+          utenti = utenti.map((item) => 
+          {
+            return Utente.parse(item)
+          })
+
+          utenti = utenti.map(function(item, i)
+          {
+            if(item.username == utenteAccesso.username)
+            {
+              return utenteAccesso
+            }
+            else
+            {
+              return item
+            }
+          })
+
+          console.log(utenti)
+
+          utenti = utenti.map(function(item, i)
+          {
+            return item.stringify()
+          })
+          
+          $.ajax({
+            data: {"content" : JSON.stringify(utenti)}, 
+            url: "php/aggiornaListaUtenti.php",
+            type: "POST",
+            success: function(data){
+              console.log("Modifica eseguita con successo!")
+            }
+          })
+
+          if(confirm("Hai appena apportato delle modifiche al tuo profilo. Vuoi ricaricare per visualizzarlo?"))
+          {
+            window.location = "carrello.html"
+          }
+          
+        }
+        
+  </script>
+  </head>
+  <body class="text-blueGray-700 antialiased" style="display: none;">
+
+    <div id="root">
+
+      <nav
+        class="md:left-0 md:block md:fixed md:top-0 md:bottom-0 md:overflow-y-auto md:flex-row md:flex-nowrap md:overflow-hidden shadow-xl bg-white flex flex-wrap items-center justify-between relative md:w-64 z-10 py-4 px-6"
+      >
+        <div
+          class="md:flex-col md:items-stretch md:min-h-full md:flex-nowrap px-0 flex flex-wrap items-center justify-between w-full mx-auto"
+        >
+          <button
+            class="cursor-pointer text-black opacity-50 md:hidden px-3 py-1 text-xl leading-none bg-transparent rounded border border-solid border-transparent"
+            type="button"
+            onclick="toggleNavbar('example-collapse-sidebar')"
+          >
+            <i class="fas fa-bars"></i></button
+          >
+          <a
+            class="md:block text-left md:pb-2 text-blueGray-600 mr-0 inline-block whitespace-nowrap text-sm uppercase font-bold p-4 px-0"
+            href="javascript:void(0)"
+          >
+            Menù
+          </a>
+          <ul class="md:hidden items-center flex flex-wrap list-none">
+
+            <li class="inline-block relative">
+              <a
+                class="text-blueGray-500 block"
+                href="#pablo"
+                onclick="apriUserMenu(event,'user-responsive-dropdown')"
+                >
+                <div class="items-center flex">
+                  <span
+                    class="w-12 h-12 text-xl text-white bg-blueGray-200 inline-flex items-center justify-center rounded-full"
+                    >
+                      <div class="text-gray-600 p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-white">
+                        <i class="fas fa-user"></i>
+                      </div>
+                  </span>
+                </div
+              ></a>
+              <div
+                class="hidden bg-white text-base z-50 float-left py-2 list-none text-left rounded shadow-lg mt-1"
+                style="min-width: 12rem;"
+                id="user-responsive-dropdown"
+              >
+              
+
+
+                <span class="uppercase m-5">Il tuo account</span>
+                <div class="h-0 my-2 border border-solid border-blueGray-100"></div>
+                
+                <a
+                  class="cursor-pointer text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
+                  href="carrello.html"
+                  >
+                  <i class="fas fa-shopping-cart"></i>
+                  Carrello
+                </a>
+
+
+                <a
+                  href="#pablo"
+                  class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
+                >
+                  <i class="fas fa-info-circle"></i>
+                  Info  
+                </a
+                >
+
+
+                <div class="h-0 my-2 border border-solid border-blueGray-100"></div>
+                
+
+                <a
+                  class="hover:text-red-500 cursor-pointer text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
+                  onclick="disconnetti()"
+                  >
+                  <i class="fas fa-power-off"></i>
+                  Disconnetti
+                </a>
+              </div>
+            </li>
+          </ul>
+          <div
+            class="md:flex md:flex-col md:items-stretch md:opacity-100 md:relative md:mt-4 md:shadow-none shadow absolute top-0 left-0 right-0 z-40 overflow-y-auto overflow-x-hidden h-auto items-center flex-1 rounded hidden"
+            id="example-collapse-sidebar"
+          >
+            <div
+              class="md:min-w-full md:hidden block pb-4 mb-4 border-b border-solid border-blueGray-200"
+            >
+              <div class="flex flex-wrap">
+                <div class="w-6/12">
+                  <a
+                    class="md:block text-left md:pb-2 text-blueGray-600 mr-0 inline-block whitespace-nowrap text-sm uppercase font-bold p-4 px-0"
+                    href="javascript:void(0)"
+                  >
+                    Menù
+                  </a>
+                </div>
+                <div class="w-6/12 flex justify-end">
+                  <button
+                    type="button"
+                    class="cursor-pointer text-black opacity-50 md:hidden px-3 py-1 text-xl leading-none bg-transparent rounded border border-solid border-transparent"
+                    onclick="toggleNavbar('example-collapse-sidebar')"
+                  >
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <form class="mt-6 mb-4 md:hidden">
+              <div class="mb-3 pt-0">
+                <input
+                  type="text"
+                  placeholder="Search"
+                  class="border-0 px-3 py-2 h-12 border border-solid  border-blueGray-500 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-base leading-snug shadow-none outline-none focus:outline-none w-full font-normal"
+                />
+              </div>
+            </form>
+            <ul 
+            class="md:flex-col md:min-w-full flex flex-col list-none"
+            id="ulMenu"
+            >
+              <li class="items-center">
+                <a
+                  class="text-blueGray-700 hover:text-blueGray-500 text-xs uppercase py-3 font-bold block"
+                  href="shop.html"
+                  ><i class="fas fa-home opacity-75 mr-2 text-sm"></i>
+                  Home (negozio)</a
+                >
+              </li>
+              <li class="items-center">
+                <a
+                  class="text-blueGray-700 hover:text-blueGray-500 text-xs uppercase py-3 font-bold block"
+                  href="login.html"
+                  ><i class="fas fa-fingerprint text-blueGray-400 mr-2 text-sm"></i>
+                  Accedi</a
+                >
+              </li>
+              <li class="items-center">
+                <a
+                  class="text-blueGray-700 hover:text-blueGray-500 text-xs uppercase py-3 font-bold block"
+                  href="signUp.html"
+                  ><i class="fas fa-clipboard-list text-blueGray-400 mr-2 text-sm"></i>
+                  Registrati
+                  </a
+                >
+              </li>
+            </ul>
+            <hr class="my-4 md:min-w-full" />
+          </div>
+        </div>
+      </nav>
+
+      <div class="relative md:ml-64 bg-blueGray-50">
+        
+        <nav
+          id="navHeader"
+          class="absolute top-0 left-0 w-full z-10 bg-transparent md:flex-row md:flex-nowrap md:justify-start flex items-center p-4"
+        >
+          <div
+            class="w-full mx-autp items-center flex justify-between md:flex-nowrap flex-wrap md:px-10 px-4"
+            
+          >
+            <a
+              class="text-white text-sm uppercase hidden lg:inline-block font-semibold"
+              href="./index.html"
+              >
+              <img 
+              src="img/logoW-1800x1800.png" 
+              alt="logo" 
+              style="width: 100px;"
+              class="transform hover:scale-125 hover:bg-opacity-100 transition ease-out duration-300">
+          
+            </a>
+            <form
+              class="md:flex hidden flex-row flex-wrap items-center lg:ml-auto mr-3"
+            >
+              <div class="relative flex w-full flex-wrap items-stretch hover:shadow-inner transform hover:scale-105 hover:bg-opacity-100 transition ease-out duration-300">
+                <span
+                  class="z-10 h-full leading-snug font-normal absolute text-center text-blueGray-300 absolute bg-transparent rounded text-base items-center justify-center w-8 pl-3 py-3"
+                  ><i class="fas fa-search"></i
+                ></span>
+                <input
+                  type="text"
+                  placeholder="Search here..."
+                  class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white bg-white rounded text-sm shadow outline-none focus:outline-none focus:ring w-full pl-10"
+                />
+              </div>
+            </form>
+            <ul
+              class="flex-col md:flex-row list-none items-center hidden md:flex"
+            >
+              <a class="text-blueGray-500 block" href="#pablo" onclick="apriUserMenu(event,'user-dropdown')">
+                <div class="items-center flex">
+                  <span
+                    class="w-12 h-12 text-xl text-white bg-blueGray-200 inline-flex items-center justify-center rounded-full"
+                    >
+                      <div 
+                      class="text-gray-600 p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-white hover:shadow-inner transform hover:scale-125 hover:bg-opacity-100 transition ease-out duration-300">
+                        <i class="fas fa-user"></i>
+                      </div>
+                  </span>
+                </div>
+              </a>
+              <span class="ml-5 text-white text-xl">Ciao <br><span id="spanSaluto"></span>!</span>
+              <div
+                class="hidden bg-white text-base z-50 float-left py-2 list-none text-left rounded shadow-lg mt-1"
+                style="min-width: 12rem;"
+                id="user-dropdown"
+              >
+                <span class="uppercase m-5">Il tuo account</span>
+                <div class="h-0 my-2 border border-solid border-blueGray-100"></div>
+                
+                <a
+                  class="cursor-pointer text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
+                  href="carrello.html"
+                  >
+                  <i class="fas fa-shopping-cart"></i>
+                  Carrello
+                </a>
+
+
+                <a
+                  href="#pablo"
+                  class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
+                >
+                  <i class="fas fa-info-circle"></i>
+                  Info  
+                </a
+                >
+
+
+                <div class="h-0 my-2 border border-solid border-blueGray-100"></div>
+                
+
+                <a
+                  class="hover:text-red-500  cursor-pointer text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
+                  onclick="disconnetti()"
+                  >
+                  <i class="fas fa-power-off"></i>
+                  Disconnetti
+                </a>
+
+
+
+              </div>
+            </ul>
+          </div>
+        </nav>
+
+        
+        
+        <div class="relative bg-blue-600 md:pt-32 pb-32 pt-12">
+
+
+          
+
+
+            <div class="px-4 md:px-10 mx-auto w-full" id="prodottiPagina">
+                <div>
+                    
+                    <!-- I prodotti qui -->
+                    <div class="flex flex-wrap" id="areaArticoli">
+                    
+                        <!--Tutti i prodotti verranno inseriti dinamicamente in questo div-->
+                    
+                        <!--<div class="w-full lg:w-6/12 xl:w-3/12 px-4 pt-6">
+                        <div class="relative flex flex-col min-w-0 break-words bg-white rounded mb-6 xl:mb-0 shadow-lg">
+                            <div class="flex-auto p-4">
+                            <div class="flex flex-wrap">
+                                <div class="relative w-full pr-4 max-w-full flex-grow flex-1">
+                                <h3 class="text-blueGray-400 uppercase font-bold text-xs">
+                                    #tipoProdotto
+                                </h3>
+                                <h5 class="text-black uppercase font-bold text-xl">
+                                    Nome prodotto
+                                </h5>
+                                <span class="font-semibold text-xl text-blueGray-700">
+                                    10,00
+                                </span>€
+                                </div>
+                                <div class="relative w-auto pl-4 flex-initial">
+                                <div class="text-white p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-lightBlue-500">
+                                    <i class="fas fa-mouse"></i>
+                                </div>
+                                </div>
+                            </div>
+                            <p class="text-sm text-blueGray-400 mt-4">
+                                <span class="text-emerald-500 mr-2">
+                                12
+                                </span>
+                                <span class="whitespace-nowrap">
+                                pezzi disponibili
+                                </span>
+                            </p>
+                            </div>
+                        </div>
+                        </div>-->
+
+                    </div>
+                    <div class="flex justify-end" id="areaTotaleOrdine">
+                        
+                    </div>
+                </div>
+            </div>
+
+
+
+
+            <div id = "informazioniCliente">
+              <div class="w-full lg\:w-12 xl:w-full px-4 pt-6">
+                <div class="relative flex flex-col min-w-0 break-words bg-white rounded mb-6 xl:mb-0 shadow-lg">
+                  
+                  <div class="flex items-end right-0 m-5 p-2 justify-end bg-secondary-100 text-secondary-200 uppercase font-bold rounded-full">
+                    <div 
+                    class="cursor-pointer  text-white text-3xl p-3 text-center inline-flex items-center justify-center w-8 h-8 shadow-lg rounded-full bg-red-500 hover:bg-white hover:text-red-500 transition ease-out duration-500"
+                    
+                    
+                    onclick="chiudiAcquistoProdotto()">
+                      <i class="fas fa-x">×</i>
+                    </div>
+                  </div>
+  
+  
+                  <div class="flex-auto p-4">
+  
+                      
+  
+                      <div class="relative w-auto pl-4 flex-initial">
+                        
+                        <span class="uppercase text-2xl font-bold max-w-2xl"> Inserisci le informazioni della tua azienda </span>
+                        
+                        
+  
+                        <form
+                        name="formInformazioniAzienda"
+                        method="post"
+                        action="carrello.html"
+                        onsubmit="checkAzienda()"
+                        >
+  
+                          <div class="relative w-full mb-3 mt-8">
+                            <label
+                            class="block uppercase text-gray-700 text-xs font-bold mb-2"
+                            for="nomeAzienda"
+                            >
+                              Nome azienda
+                            </label>
+  
+                            <input
+                            type="text"
+                            class="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
+                            placeholder="Nome della tua azienda"
+                            style="transition: all 0.15s ease 0s;"
+                            required
+                            autofocus
+                            name="nomeAzienda"
+                            />
+                          </div>
+  
+  
+                          <div class="relative w-full mb-3">
+                            <label
+                            class="block uppercase text-gray-700 text-xs font-bold mb-2"
+                            for="indirizzoAzienda"
+                            >
+                              Indirizzo
+                            </label>
+  
+                            <input
+                            type="text"
+                            class="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
+                            placeholder="Indirizzo della tua azienda"
+                            style="transition: all 0.15s ease 0s;"
+                            required
+                            name="indirizzoAzienda"
+                            />
+                          </div>
+  
+                          <div class="relative w-full mb-3">
+                            <label
+                            class="block uppercase text-gray-700 text-xs font-bold mb-2"
+                            for="partitaIva"
+                            >
+                              Partita Iva
+                            </label>
+  
+                            <input
+                            type="text"
+                            pattern="[0-9]{11}"
+                            class="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
+                            placeholder="Partita Iva della tua azienda"
+                            style="transition: all 0.15s ease 0s;"
+                            required
+                            name="partitaIva"
+                            />
+                          </div>
+  
+                          <div class="relative w-full mb-3">
+                            <label
+                            class="block uppercase text-gray-700 text-xs font-bold mb-2"
+                            for="codiceFiscale"
+                            >
+                              Codice fiscale
+                            </label>
+  
+                            <input
+                            type="text"
+                            pattern="[A-Za-z]{6}[0-9]{2}[A-Za-z]{1}[0-9]{2}[A-Za-z]{1}[0-9]{3}[A-Za-z]{1}"
+                            class="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
+                            placeholder="Codice fiscale della tua azienda"
+                            style="transition: all 0.15s ease 0s;"
+                            required
+                            name="codiceFiscale"
+                            />
+                          </div>
+  
+                          <div class="text-center mt-6">
+                            <button
+                            class="bg-gray-900 text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+                            type="submit"
+                            style="transition: all 0.15s ease 0s;"
+                            >
+                            Continua
+                            </button>
+                          </div>
+  
+                        </form>
+                      </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+        
+
+        <footer class="relative bg-gray-300 pt-8 pb-6">
+          <div
+            class="bottom-auto top-0 left-0 right-0 w-full absolute pointer-events-none overflow-hidden -mt-20"
+            style="height: 80px;"
+          >
+            <svg
+              class="absolute bottom-0 overflow-hidden"
+              xmlns="http://www.w3.org/2000/svg"
+              preserveaspectratio="none"
+              version="1.1"
+              viewbox="0 0 2560 100"
+              x="0"
+              y="0"
+            >
+              <polygon
+                class="text-gray-300 fill-current"
+                points="2560 0 2560 100 0 100"
+              ></polygon>
+            </svg>
+          </div>
+          <div class="container mx-auto px-4">
+            <hr class="my-6 border-gray-400" />
+            <div
+              class="flex flex-wrap items-center md:justify-between justify-center"
+            >
+              <div class="w-full md:w-4/12 px-4 mx-auto text-center">
+                <div class="text-sm text-gray-600 font-semibold py-1">
+                  <a
+                    href="#"
+                    class="text-gray-600 hover:text-gray-900"
+                    >Northbridge Softworks</a
+                  >.
+                </div>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </div>
+
+
+    </div>
+  </body>
+</html>

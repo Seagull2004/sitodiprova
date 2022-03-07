@@ -99,6 +99,26 @@ class Utente
         this.#username = username
     }
 
+    set nomeAzienda(nomeAzienda)
+    {
+      this.#nomeAzienda = nomeAzienda
+    }
+
+    set indirizzoAzienda(indirizzoAzienda)
+    {
+      this.#indirizzoAzienda = indirizzoAzienda
+    }
+
+    set partitaIva(partitaIva)
+    {
+      this.#partitaIva = partitaIva
+    }
+
+    set codiceFiscale(codiceFiscale)
+    {
+      this.#codiceFiscale = codiceFiscale
+    }
+
     // Metodi ------------------------------------------------------------------------------------------------------------------------------------------------
 
     toString()

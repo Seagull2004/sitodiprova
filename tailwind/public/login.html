@@ -26,7 +26,7 @@
 		<script src="script/classeUtente.js"></script>
 		<script src="script/classeAmministratore.js"></script>
 		<script>
-			// leggo l'oggetto che contiene tutti gli utenti
+			/* leggo l'oggetto che contiene tutti gli utenti */
 			var utenti = JSON.parse(utentiJSON)
 
 			utenti = utenti.map((item) => 
@@ -34,7 +34,25 @@
 				return Utente.parse(item)
 			})
 
-			
+			window.onload = caricamentoPagina()
+
+
+			function caricamentoPagina()
+			{
+				/* Genero sfumatura al caricamento della pagina */
+				$(function()
+				{
+					$('body').fadeIn(500)
+					
+					setTimeout(function()
+					{
+						$('body').fadeOut(1000, function()
+						{
+							location.reload(true)
+						})
+					}, 60000)
+				})
+			}
 
 			// valuta la validità delle credenziali immesse dall'utente
 			function checkLogIn()
@@ -68,7 +86,7 @@
 	</head>
 
 
-	<body class="text-gray-800 antialiased">
+	<body class="text-gray-800 antialiased" style="display: none;">
 
 		<nav
 		class="top-0 absolute z-50 w-full flex flex-wrap items-center justify-between px-2 py-3 "
@@ -84,7 +102,7 @@
 						src="img/logoW-1800x1800.png"
 						alt="logo"
 						style="width: 100px"
-						class="hover:shadow-lg transition ease-out duration-300">
+						class="hover:shadow-inner transform hover:scale-125 hover:bg-opacity-100 transition ease-out duration-300">
 					</a>
 
 					<button
@@ -107,7 +125,7 @@
 						<li class="flex items-center p-2">
 							<a href="login.html">
 								<button
-								class="btn bg-white text-gray-800 active:bg-gray-100 text-xs font-bold uppercase px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none lg:mr-1 lg:mb-0 ml-3 mb-3"
+								class="btn bg-white text-gray-800 inline-block hover:shadow-inner transform hover:scale-125 hover:bg-opacity-100 transition ease-out duration-300"
 								type="button"
 								style="transition: all 0.15s ease 0s;"
 								>
@@ -119,7 +137,7 @@
 						<li class="flex items-center p-2">
 							<a href="signUp.html">
 								<button
-								class="btn bg-white text-gray-800 active:bg-gray-100 text-xs font-bold uppercase px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none lg:mr-1 lg:mb-0 ml-3 mb-3"
+								class="btn bg-white text-gray-800 inline-block hover:shadow-inner transform hover:scale-125 hover:bg-opacity-100 transition ease-out duration-300"
 								type="button"
 								style="transition: all 0.15s ease 0s;"
 								>

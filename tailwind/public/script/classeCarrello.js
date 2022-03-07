@@ -126,7 +126,7 @@ class Carrello
     if(indice != -1 && quantita > 0 && magazzino.prodotti[indice].quantita >= quantita) 
     {
       magazzino.prodotti[indice].quantita -= quantita;
-      this.#numeroProdotti += quantita
+      this.#numeroProdotti += parseInt(quantita)
       this.#totaleSenzaIva += magazzino.prodotti[indice].prezzoSenzaIva * quantita
       this.#totaleConIva = this.#totaleSenzaIva * 1.22
 
@@ -153,12 +153,7 @@ class Carrello
           console.log("Aggiornamento file riuscito")            
         }
       })
-
-      if(confirm("Hai appena apportato delle modifiche al magazzino. Vuoi ricaricare la pagina per visualizzarle?"))
-      {
-        window.location = "shop.html"
-      }
-
+      
     }
     else
     {
@@ -173,24 +168,30 @@ class Carrello
     let indiceCarrello = this.trovaIndice(nomeProdotto)
 
     //il prodotto è disponibile e la quantita che si sta cercando di eliminare non supera quella presente nel carrello ed e' positiva
-    if(indice != -1 && indiceCarrello != -1
-       && this.#arrayProdotti[indiceCarrello].quantita >= quantita && quantita > 0) 
+    if(indice != -1 
+        && indiceCarrello != -1
+        && this.#arrayProdotti[indiceCarrello].quantita >= quantita 
+        && quantita > 0) 
     {
       this.#arrayProdotti[indiceCarrello].quantita -= quantita
+      this.#numeroProdotti -= quantita
+      this.#totaleSenzaIva -= this.#arrayProdotti[indiceCarrello].prezzoSenzaIva * quantita
+      this.#totaleConIva = this.#totaleSenzaIva * 1.22
+      magazzino.prodotti[indice].quantita += quantita
+      
+      //console.log(magazzino.prodotti[indice].quantita)
 
       //la quantita nel carrello dopo l'eliminazione è 0, viene dunque rimosso il prodotto dal carrello
       if(this.#arrayProdotti[indiceCarrello].quantita == 0)
       {
         this.#arrayProdotti.splice(indiceCarrello, 1);
       }
-
-      this.#numeroProdotti -= quantita
-      this.#totaleSenzaIva -= prodotto.prezzoSenzaIva * quantita
-      this.#totaleConIva = this.#totaleSenzaIva * 1.22
-      magazzino.prodotti[indice].quantita += quantita
     }
     else
+    {
       console.error("Errore: prodotto non esistente, non presente nel carrello o la quantita di prodotto che si sta cercando di rimuovere è troppo alta")
+    }
+      
   }
 
   stringify()
