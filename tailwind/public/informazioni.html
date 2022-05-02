@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Il tuo carrello!</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    
+    <link 
+      rel="icon" 
+      href="img/icona-890x890.png"
+    >
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.css"
+    >
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    >
+    <link
+      rel="stylesheet"
+      href="style/styles.css"
+    >
+
+    <!-- librerie e framework -->
+    <script src="librerie/popper.min.js"></script>
+    <script src="librerie/jquerymin.js"></script>
+    <!-- database e classi -->
+    <script type="text/javascript" language="javascript">  
+      var versionUpdate = (new Date()).getTime();  
+      var script = document.createElement("script");  
+      script.src = "database/utentiJSON.json?v=" + versionUpdate;
+      document.head.appendChild(script);
+    
+    </script> 
+    <script src="script/classeProdotto.js"></script>
+    <script src="script/classeMagazzino.js"></script>
+    <script src="script/classeCarrello.js"></script>
+    <script src="script/classeUtente.js"></script>
+    <script src="script/classeAmministratore.js"></script>
+    <script src="script/classeOrdine.js"></script>
+    <!-- script funzionali-->
+    <script src="script/carrelloShopScriptFunzionale.js"></script>
+    <script src="script/informazioniScriptFunzionale.js"></script>
+  </head>
+  <body class="text-blueGray-700 antialiased" style="display: none;">
+
+    <div id="root">
+
+      <nav
+        class="md:left-0 md:block md:fixed md:top-0 md:bottom-0 md:overflow-y-auto md:flex-row md:flex-nowrap md:overflow-hidden shadow-xl bg-white flex flex-wrap items-center justify-between relative md:w-64 z-10 py-4 px-6"
+      >
+        <div
+          class="md:flex-col md:items-stretch md:min-h-full md:flex-nowrap px-0 flex flex-wrap items-center justify-between w-full mx-auto"
+        >
+          <button
+            class="cursor-pointer text-black opacity-50 md:hidden px-3 py-1 text-xl leading-none bg-transparent rounded border border-solid border-transparent"
+            type="button"
+            onclick="toggleNavbar('example-collapse-sidebar')"
+          >
+            <i class="fas fa-bars"></i></button
+          >
+          <a
+            class="md:block text-left md:pb-2 text-blueGray-600 mr-0 inline-block whitespace-nowrap text-sm uppercase font-bold p-4 px-0"
+            href="javascript:void(0)"
+          >
+            Menù
+          </a>
+          <ul class="md:hidden items-center flex flex-wrap list-none">
+
+            <li class="inline-block relative">
+              <a
+                class="text-blueGray-500 block"
+                href="#pablo"
+                onclick="apriUserMenu(event,'user-responsive-dropdown')"
+                >
+                <div class="items-center flex">
+                  <span
+                    class="w-12 h-12 text-xl text-white bg-blueGray-200 inline-flex items-center justify-center rounded-full"
+                    >
+                      <div class="text-gray-600 p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-white">
+                        <i class="fas fa-user"></i>
+                      </div>
+                  </span>
+                </div
+              ></a>
+              <div
+                class="hidden bg-white text-base z-50 float-left py-2 list-none text-left rounded shadow-lg mt-1"
+                style="min-width: 12rem;"
+                id="user-responsive-dropdown"
+              >
+              
+
+
+                <span class="uppercase m-5">Il tuo account</span>
+                <div class="h-0 my-2 border border-solid border-blueGray-100"></div>
+                
+                <a
+                  class="cursor-pointer text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
+                  href="carrello.html"
+                  >
+                  <i class="fas fa-shopping-cart"></i>
+                  Carrello
+                </a>
+
+
+                <a
+                  href="informazioni.html"
+                  class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
+                >
+                  <i class="fas fa-info-circle"></i>
+                  Info  
+                </a
+                >
+
+
+                <div class="h-0 my-2 border border-solid border-blueGray-100"></div>
+                
+
+                <a
+                  class="hover:text-red-500 cursor-pointer text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
+                  onclick="disconnetti()"
+                  >
+                  <i class="fas fa-power-off"></i>
+                  Disconnetti
+                </a>
+              </div>
+            </li>
+          </ul>
+          <div
+            class="md:flex md:flex-col md:items-stretch md:opacity-100 md:relative md:mt-4 md:shadow-none shadow absolute top-0 left-0 right-0 z-40 overflow-y-auto overflow-x-hidden h-auto items-center flex-1 rounded hidden"
+            id="example-collapse-sidebar"
+          >
+            <div
+              class="md:min-w-full md:hidden block pb-4 mb-4 border-b border-solid border-blueGray-200"
+            >
+              <div class="flex flex-wrap">
+                <div class="w-6/12">
+                  <a
+                    class="md:block text-left md:pb-2 text-blueGray-600 mr-0 inline-block whitespace-nowrap text-sm uppercase font-bold p-4 px-0"
+                    href="javascript:void(0)"
+                  >
+                    Menù
+                  </a>
+                </div>
+                <div class="w-6/12 flex justify-end">
+                  <button
+                    type="button"
+                    class="cursor-pointer text-black opacity-50 md:hidden px-3 py-1 text-xl leading-none bg-transparent rounded border border-solid border-transparent"
+                    onclick="toggleNavbar('example-collapse-sidebar')"
+                  >
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <form class="mt-6 mb-4 md:hidden">
+              <div class="mb-3 pt-0">
+                <input
+                  type="text"
+                  placeholder="Search"
+                  class="border-0 px-3 py-2 h-12 border border-solid  border-blueGray-500 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-base leading-snug shadow-none outline-none focus:outline-none w-full font-normal"
+                />
+              </div>
+            </form>
+            <ul 
+            class="md:flex-col md:min-w-full flex flex-col list-none"
+            id="ulMenu"
+            >
+              <li class="items-center">
+                <a
+                  class="text-blueGray-700 hover:text-blueGray-500 text-xs uppercase py-3 font-bold block"
+                  href="shop.html"
+                  ><i class="fas fa-home opacity-75 mr-2 text-sm"></i>
+                  Home (negozio)</a
+                >
+              </li>
+              <li class="items-center">
+                <a
+                  class="text-blueGray-700 hover:text-blueGray-500 text-xs uppercase py-3 font-bold block"
+                  href="login.html"
+                  ><i class="fas fa-fingerprint text-blueGray-400 mr-2 text-sm"></i>
+                  Accedi</a
+                >
+              </li>
+              <li class="items-center">
+                <a
+                  class="text-blueGray-700 hover:text-blueGray-500 text-xs uppercase py-3 font-bold block"
+                  href="signUp.html"
+                  ><i class="fas fa-clipboard-list text-blueGray-400 mr-2 text-sm"></i>
+                  Registrati
+                  </a
+                >
+              </li>
+            </ul>
+            <hr class="my-4 md:min-w-full" />
+          </div>
+        </div>
+      </nav>
+
+      <div class="relative md:ml-64 bg-blueGray-50">
+        
+        <nav
+          id="navHeader"
+          class="absolute top-0 left-0 w-full z-10 bg-transparent md:flex-row md:flex-nowrap md:justify-start flex items-center p-4"
+        >
+          <div
+            class="w-full mx-autp items-center flex justify-between md:flex-nowrap flex-wrap md:px-10 px-4"
+            
+          >
+            <a
+              class="text-white text-sm uppercase hidden lg:inline-block font-semibold"
+              href="./index.html"
+              >
+              <img 
+              src="img/logoW-1800x1800.png" 
+              alt="logo" 
+              style="width: 100px;"
+              class="transform hover:scale-125 hover:bg-opacity-100 transition ease-out duration-300">
+          
+            </a>
+           
+            <ul
+              class="flex-col md:flex-row list-none items-center hidden md:flex"
+            >
+              <a class="text-blueGray-500 block" href="#pablo" onclick="apriUserMenu(event,'user-dropdown')">
+                <div class="items-center flex">
+                  <span
+                    class="w-12 h-12 text-xl text-white bg-blueGray-200 inline-flex items-center justify-center rounded-full"
+                    >
+                      <div 
+                      class="text-gray-600 p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-white hover:shadow-inner transform hover:scale-125 hover:bg-opacity-100 transition ease-out duration-300">
+                        <i class="fas fa-user"></i>
+                      </div>
+                  </span>
+                </div>
+              </a>
+              <span class="ml-5 text-white text-xl">Ciao <br><span id="spanSaluto"></span>!</span>
+              <div
+                class="hidden bg-white text-base z-50 float-left py-2 list-none text-left rounded shadow-lg mt-1"
+                style="min-width: 12rem;"
+                id="user-dropdown"
+              >
+                <span class="uppercase m-5">Il tuo account</span>
+                <div class="h-0 my-2 border border-solid border-blueGray-100"></div>
+                
+                <a
+                  class="cursor-pointer text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
+                  href="carrello.html"
+                  >
+                  <i class="fas fa-shopping-cart"></i>
+                  Carrello
+                </a>
+
+
+                <a
+                  href="informazioni.html"
+                  class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
+                >
+                  <i class="fas fa-info-circle"></i>
+                  Info  
+                </a
+                >
+
+
+                <div class="h-0 my-2 border border-solid border-blueGray-100"></div>
+                
+
+                <a
+                  class="hover:text-red-500  cursor-pointer text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
+                  onclick="disconnetti()"
+                  >
+                  <i class="fas fa-power-off"></i>
+                  Disconnetti
+                </a>
+
+
+
+              </div>
+            </ul>
+          </div>
+        </nav>
+
+        
+        
+        <div class="relative bg-blue-600 md:pt-64 lg:pb-32">
+
+
+              <div class="container mx-auto px-4 pt-64 lg:-pt-56">
+                <div class="flex flex-wrap justify-center lg:-mt-64 -mt-48">
+                  <div class="w-full  px-4">
+                    <div
+                      class="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-gray-300"
+                    >
+                      <div class="flex-auto p-5 lg:p-10">
+                        <h4 class="text-2xl font-semibold">Le tue informazioni</h4>
+                        <p class="leading-relaxed mt-1 mb-4 text-gray-600">
+                          
+                        </p>
+                        <div class="relative w-full mb-3 mt-8">
+                          <label
+                            class="block uppercase text-gray-500 text-xs font-bold mb-2 "
+                            for="full-name"
+                            >
+                              Nome utente
+                            </label
+                          >
+                          <span id = "nomeUtente">
+                            Non è ancora stata inserita questa informazione
+                          </span>
+                        </div>
+                        <div class="relative w-full mb-3">
+                          <label
+                            class="block uppercase text-gray-500 text-xs font-bold mb-2"
+                            for="email"
+                            >Indirizzo e-mail</label
+                          >
+                          <span id="indirizzoEmail">
+                            Non è ancora stata inserita questa informazione
+                          </span>
+                        </div>
+                        <div class="relative w-full mb-3">
+                          <label
+                            class="block uppercase text-gray-500  text-xs font-bold mb-2"
+                            for="email"
+                            >Nome azienda</label
+                          >
+                          <span id="nomeAzienda">
+                            Non è ancora stata inserita questa informazione
+                          </span>
+                        </div>
+
+                        <div class="relative w-full mb-3">
+                          <label
+                            class="block uppercase text-gray-500 text-xs font-bold mb-2"
+                            for="email"
+                            >Indirizzo azienda</label
+                          >
+                          <span id = "indirizzoAzienda">
+                            Non è ancora stata inserita questa informazione
+                          </span>
+                        </div>
+
+                        <div class="relative w-full mb-3">
+                          <label
+                            class="block uppercase text-gray-500 text-xs font-bold mb-2"
+                            for="email"
+                            >Partita IVA</label
+                          >
+                          <span id="partitaIVA">
+                            Non è ancora stata inserita questa informazione
+                          </span>
+                        </div>
+
+                        <div class="relative w-full mb-3">
+                          <label
+                            class="block uppercase text-gray-500 text-xs font-bold mb-2"
+                            for="email"
+                            >Codice fiscale</label
+                          >
+                          <span id="codiceFiscale">
+                            Non è ancora stata inserita questa informazione
+                          </span>
+                        </div>
+
+                        <div class="relative w-full mb-3">
+                          <label
+                            class="block uppercase text-gray-500 text-xs font-bold mb-2 "
+                            for="email"
+                            >Cronologia acquisti</label
+                          >
+                          <select
+                          class="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
+                          id="cronologiaAcquisti"
+                          size="10"
+                          >
+                            <option value="null">Non è ancora stato acquistato nessun prodotto</option>
+                          </select>
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            
+        </div>
+        
+
+        <footer class="relative bg-gray-300 pt-8 pb-6">
+          <div
+            class="bottom-auto top-0 left-0 right-0 w-full absolute pointer-events-none overflow-hidden -mt-20"
+            style="height: 80px;"
+          >
+            <svg
+              class="absolute bottom-0 overflow-hidden"
+              xmlns="http://www.w3.org/2000/svg"
+              preserveaspectratio="none"
+              version="1.1"
+              viewbox="0 0 2560 100"
+              x="0"
+              y="0"
+            >
+              <polygon
+                class="text-gray-300 fill-current"
+                points="2560 0 2560 100 0 100"
+              ></polygon>
+            </svg>
+          </div>
+          <div class="container mx-auto px-4">
+            <hr class="my-6 border-gray-400" />
+            <div
+              class="flex flex-wrap items-center md:justify-between justify-center"
+            >
+              <div class="w-full md:w-4/12 px-4 mx-auto text-center">
+                <div class="text-sm text-gray-600 font-semibold py-1">
+                  <a
+                    href="#"
+                    class="text-gray-600 hover:text-gray-900"
+                    >Northbridge Softworks</a
+                  >.
+                </div>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </div>
+
+
+    </div>
+  </body>
+</html>

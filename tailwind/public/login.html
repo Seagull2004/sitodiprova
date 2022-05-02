@@ -20,43 +20,62 @@
 				$('#' + navbarID).toggle(500)
 			}
 		</script>
-		<script src="database/utentiJSON.json"></script>
+		<script type="text/javascript" language="javascript">  
+			var versionUpdate = (new Date()).getTime();  
+			var script = document.createElement("script");  
+			script.src = "database/utentiJSON.json?v=" + versionUpdate;
+			document.head.appendChild(script);
+		  
+		  </script> 
+		
 		<script src="script/classeProdotto.js"></script>
 		<script src="script/classeCarrello.js"></script>
 		<script src="script/classeUtente.js"></script>
 		<script src="script/classeAmministratore.js"></script>
 		<script>
 			/* leggo l'oggetto che contiene tutti gli utenti */
-			var utenti = JSON.parse(utentiJSON)
+			
 
-			utenti = utenti.map((item) => 
-			{
-				return Utente.parse(item)
-			})
-
-			window.onload = caricamentoPagina()
+			window.onload = caricamentoPagina
 
 
 			function caricamentoPagina()
 			{
-				/* Genero sfumatura al caricamento della pagina */
-				$(function()
+				
+
+				if(localStorage.getItem("utenteAccesso")!= null)
 				{
-					$('body').fadeIn(500)
-					
-					setTimeout(function()
+					window.location = "shop.html"
+				}
+				else
+				{
+					/* Genero sfumatura al caricamento della pagina */
+					$(function()
 					{
-						$('body').fadeOut(1000, function()
+						$('body').fadeIn(500)
+						
+						setTimeout(function()
 						{
-							location.reload(true)
-						})
-					}, 60000)
-				})
+							$('body').fadeOut(1000, function()
+							{
+								window.location.href = window.location.href
+							})
+						}, 60000)
+					})
+				}
+				
 			}
+
+			var utenti 
 
 			// valuta la validità delle credenziali immesse dall'utente
 			function checkLogIn()
 			{
+				utenti = JSON.parse(utentiJSON)
+				utenti = utenti.map((item) => 
+				{
+					return Utente.parse(item)
+				})
 				// salvo in due variabili i dati inseriti nel login
 				var nomeUtente = document.formLogIn.nomeUtente.value
 				var password = document.formLogIn.password.value
@@ -121,6 +140,17 @@
 
 					<ul class="flex flex-col lg:flex-row list-none lg:ml-auto">
 
+						<li class="flex items-center p-2">
+							<a href="pdf/guida_in_linea.pdf">
+							  <button
+							  class="btn bg-white text-gray-800 inline-block hover:shadow-inner transform hover:scale-125 hover:bg-opacity-100 transition ease-out duration-300"
+							  type="button"
+							  style="transition: all 0.15s ease 0s;"
+							  >
+								<i class="fas fa-question"></i>
+							  </button>
+							</a>
+						</li>
 
 						<li class="flex items-center p-2">
 							<a href="login.html">
@@ -129,7 +159,7 @@
 								type="button"
 								style="transition: all 0.15s ease 0s;"
 								>
-								Log in
+								Accedi
 								</button>
 							</a>
 						</li>
@@ -141,7 +171,7 @@
 								type="button"
 								style="transition: all 0.15s ease 0s;"
 								>
-								Sign up
+								Registrati
 								</button>
 							</a>
 						</li>
@@ -167,6 +197,28 @@
 					></span>
 				</div>
 
+
+				<div
+				class="top-auto bottom-0 left-0 right-0 w-full absolute pointer-events-none overflow-hidden"
+				style="height: 70px;"
+				>
+					<svg
+						class="absolute bottom-0 overflow-hidden"
+						xmlns="http://www.w3.org/2000/svg"
+						preserveaspectratio="none"
+						version="1.1"
+						viewbox="0 0 2560 100"
+						x="0"
+						y="0"
+					>
+						<polygon
+						class="text-white fill-current"
+						points="2560 0 2560 200 0 100"
+						></polygon>
+					</svg>
+				</div>
+
+
 				<div class="w-full lg:w-6/12 px-4">
 				</div>
 
@@ -178,13 +230,20 @@
 			<div class="w-full flex flex-wrap justify-center lg:-mt-64 -mt-48">
 				<div class="w-full lg:w-6/12 px-4">
 					<div
-					class="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-gray-300"
+					class="relative flex flex-col items-end min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-gray-300"
 					>
-						<div class="flex-auto p-10 lg:p-20">
+						<a href= "index.html" class="p-4">
+							<div 
+							class="cursor-pointer  text-white text-3xl p-3 text-center inline-flex items-center justify-center w-8 h-8 shadow-lg rounded-full bg-red-500 hover:bg-white hover:text-red-500 transition ease-out duration-500"
+							>
+								<span>✘</span>
+							</div>
+						</a>
+						<div class="flex-auto pl-10 pr-10 pb-10 pt-3 lg:pl-20 lg:pr-20 lg:pb-20 lg:pt-3 ">
 							<h4 class="text-2xl font-semibold">Effettua l'accesso</h4>
 							<p class="leading-relaxed mt-1 mb-4 text-gray-600">
 								Esegui l'accesso con le credenziali del tuo profilo
-								o se ancora non ce l'hai creane uno facendo clic sul bottone "Sign up".
+								o se ancora non ce l'hai creane uno facendo clic sul bottone "Registrati"
 							</p>
 							<form
 							name="formLogIn"
@@ -255,11 +314,10 @@
 				<div class="w-full md:w-4/12 px-4 mx-auto text-center">
 					<div class="text-sm text-gray-600 font-semibold py-1 pb-6">
 						<a
-						href="#"
-						class="text-gray-600 hover:text-gray-900"
-						>
-						Northbridge Softworks
-						</a>.
+							href="#"
+							class="text-gray-600 hover:text-gray-800"
+							>Northbridge Softworks</a
+						>.
 					</div>
 				</div>
 			</div>

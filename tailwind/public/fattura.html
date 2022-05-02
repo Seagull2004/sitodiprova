@@ -27,9 +27,25 @@
     <script src="librerie/jquerymin.js"></script>
     <script src="librerie/html2pdf.js"></script>
     <!-- database e classi -->
-    <script src="database/magazzinoJSON.json"></script>
-    <script src="database/utentiJSON.json"></script>
-    <script src="database/ordiniJSON.json"></script>
+    <script type="text/javascript" language="javascript">  
+      var versionUpdate = (new Date()).getTime();  
+      var script = document.createElement("script");  
+      script.src = "database/magazzinoJSON.json?v=" + versionUpdate;  
+      document.head.appendChild(script);
+    </script> 
+    <script type="text/javascript" language="javascript">  
+      var versionUpdate = (new Date()).getTime();  
+      var script = document.createElement("script");  
+      script.src = "database/utentiJSON.json?v=" + versionUpdate;
+      document.head.appendChild(script);
+    
+    </script> 
+    <script type="text/javascript" language="javascript">  
+      var versionUpdate = (new Date()).getTime();  
+      var script = document.createElement("script");  
+      script.src = "database/ordiniJSON.json?v=" + versionUpdate;
+      document.head.appendChild(script);
+    </script> 
     <script src="script/classeProdotto.js"></script>
     <script src="script/classeMagazzino.js"></script>
     <script src="script/classeCarrello.js"></script>
@@ -38,6 +54,10 @@
     <script src="script/classeOrdine.js"></script>
     <script>
         var utenteAccesso
+        var ordine
+
+        ordine = localStorage.getItem('ordine')
+        ordine = Ordine.parse(ordine)
 
         window.onload = caricamentoPagina
         
@@ -72,7 +92,16 @@
             const element = document.getElementById("invoice")
             html2pdf().set({ html2canvas: { scale: 4 } }).from(element).save();
         }
+        
+        function disconnetti()
+        {
+          localStorage.removeItem('utenteAccesso')
 
+          if(confirm("Stai per disconetterti. Continuare?"))
+          {
+            window.location = "index.html"
+          }
+        }
 
         function caricamentoPagina()
         {
@@ -83,6 +112,31 @@
             /* Aggiungo il saluto all'utente nella pagina in base all'utenteAccesso */
             document.getElementById('spanSaluto').innerHTML = utenteAccesso.username
 
+            var ordini =  JSON.parse(ordiniJSON)
+            ordini = ordini.map(function(item)
+            {
+              return Ordine.parse(item)
+            })
+
+            
+            if(ordine.numeroFattura != ordini.length)
+            {
+              ordini.push(ordine)
+
+              ordini = ordini.map(function(item)
+              {
+                return item.stringify()
+              })
+              $.ajax({
+                data: {"content" : JSON.stringify(ordini)}, 
+                url: "php/aggiornaOrdini.php",
+                type: "POST",
+                success: function(data){
+                    console.log(data)
+                    console.log("Aggiornamento file riuscito")            
+                }
+              })
+            }
 
             /* Genero sfumatura al caricamento della pagina */
             $(function()
@@ -102,8 +156,7 @@
             })
 
 
-            ordine = localStorage.getItem('ordine')
-            ordine = Ordine.parse(ordine)
+            
 
             document.getElementById('aziendaCliente').innerHTML = ordine.cliente.nomeAzienda
             document.getElementById('indirizzoAziendaCliente').innerHTML = ordine.cliente.indirizzoAzienda
@@ -184,6 +237,7 @@
                 $('#tabellaProdotti').append(rigaDiDefault)
             }
         }
+        //location.reload(true);
   </script>
   </head>
   <body class="text-blueGray-700 antialiased" style="display: none;">
@@ -248,7 +302,7 @@
 
 
                 <a
-                  href="#pablo"
+                  href="informazioni.html"
                   class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
                 >
                   <i class="fas fa-info-circle"></i>
@@ -411,7 +465,8 @@
 
 
                 <a
-                  href="#pablo"
+
+                  href="informazioni.html"
                   class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
                 >
                   <i class="fas fa-info-circle"></i>

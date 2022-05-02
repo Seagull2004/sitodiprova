@@ -154,11 +154,25 @@ class Carrello
         }
       })
       
+      
     }
     else
     {
       console.error("Errore: prodotto non esistente o esaurito o quantita' non valida")
     }
+  }
+
+  /*Acquista un prodotto nel carrello*/
+  acquistaProdotto(nomeProdottoAcquistato)
+  {
+    let indiceProdottoAcquistato = this.trovaIndice(nomeProdottoAcquistato)
+    let prodottoAcquistato = this.#arrayProdotti[indiceProdottoAcquistato]
+    
+    this.#cronologiaAcquisti.push(prodottoAcquistato)
+    this.#numeroProdotti -= prodottoAcquistato.quantita
+    this.#totaleSenzaIva -= prodottoAcquistato.prezzoSenzaIva * prodottoAcquistato.quantita
+    this.#totaleConIva = this.#totaleSenzaIva *1.22
+    this.#arrayProdotti.splice(indiceProdottoAcquistato, 1)
   }
   
   /*Elimina "quantita" pezzi di prodotto dal carrello */

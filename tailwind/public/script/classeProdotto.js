@@ -113,7 +113,29 @@ class Prodotto
         // da vedere se sostituire con una immagine
       toHtmlString +=             '<div class="text-black p-3 text-center inline-flex items-center justify-center w-12 h-12 shadow-lg rounded-full bg-lightBlue-500">'
       
-      if(this.#categoria.toLowerCase() == "mouse")
+      switch(this.#categoria.toLowerCase())
+      {
+        case "mouse":
+            toHtmlString += '<i class="fas fa-mouse"></i>'
+            break
+        case "tastiere":
+            toHtmlString += '<i class="fas fa-keyboard"></i>'
+            break
+        case "monitor":
+            toHtmlString += '<img src="img/ico-monitor.svg">'
+            break
+        case "archiviazione":
+            toHtmlString += '<i class="fas fa-database"></i>'
+            break
+        case "cablaggio":
+            toHtmlString += '<i class="fas fa-network-wired"></i>'
+            break
+        default:
+            toHtmlString += '<img src="img/ico-chip.png">'
+            break
+      }
+
+      /*if(this.#categoria.toLowerCase() == "mouse") // da fare con uno switch
       {
         toHtmlString += '<i class="fas fa-mouse"></i>'
       }
@@ -136,7 +158,7 @@ class Prodotto
       else
       {
         toHtmlString += '<img src="img/ico-chip.png">'
-      }
+      }*/
       
       toHtmlString +=             '</div>'
       

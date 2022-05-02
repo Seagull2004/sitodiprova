@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
+    
     <link 
       rel="icon" 
       href="img/icona-890x890.png"
@@ -26,9 +27,25 @@
     <script src="librerie/popper.min.js"></script>
     <script src="librerie/jquerymin.js"></script>
     <!-- database e classi -->
-    <script src="database/magazzinoJSON.json"></script>
-    <script src="database/utentiJSON.json"></script>
-    <script src="database/ordiniJSON.json"></script>
+    <script type="text/javascript" language="javascript">  
+      var versionUpdate = (new Date()).getTime();  
+      var script = document.createElement("script");  
+      script.src = "database/magazzinoJSON.json?v=" + versionUpdate;  
+      document.head.appendChild(script);
+    </script> 
+    <script type="text/javascript" language="javascript">  
+      var versionUpdate = (new Date()).getTime();  
+      var script = document.createElement("script");  
+      script.src = "database/utentiJSON.json?v=" + versionUpdate;
+      document.head.appendChild(script);
+    
+    </script> 
+    <script type="text/javascript" language="javascript">  
+      var versionUpdate = (new Date()).getTime();  
+      var script = document.createElement("script");  
+      script.src = "database/ordiniJSON.json?v=" + versionUpdate;
+      document.head.appendChild(script);
+    </script> 
     <script src="script/classeProdotto.js"></script>
     <script src="script/classeMagazzino.js"></script>
     <script src="script/classeCarrello.js"></script>
@@ -36,407 +53,8 @@
     <script src="script/classeAmministratore.js"></script>
     <script src="script/classeOrdine.js"></script>
     <!-- script funzionali-->
-    <script src="script/shopScriptFunzionale.js"></script>
-    <script>
-        var magazzino
-        var utenteAccesso
-
-        window.onload = caricamentoPagina
-
-        function caricamentoPagina()
-        {
-            /* Nascondo parti dell'html che verranno visualizzate in un secondo momento*/
-            $('#bottoneAggiungiProdotto').hide()
-            $('#informazioniCliente').hide()
-
-            /* converto l'oggetto e i suoi figli negli oggetti specifici */
-            magazzino = Magazzino.parse(magazzinoJSON)
-
-
-            /* vado a inserire ogni prodotto nell'html */
-            utenteAccesso = Utente.parse(localStorage.getItem('utenteAccesso'))
-            if(utenteAccesso.carrello.arrayProdotti.length > 0)
-            {
-                utenteAccesso.carrello.arrayProdotti.forEach((item, i) => 
-                {
-                    $('#areaArticoli').append(item.toHTML())
-                })
-
-                $ ('#areaTotaleOrdine').append(
-                    `
-                    <div 
-                    class="text-white mt-10 text-3xl flex flex-col"
-                    >
-                        <span>Totale imponibile: ` + utenteAccesso.carrello.totaleSenzaIva + ` €</span>
-                        <button
-                        class="w-full mt-5 btn text-white bg-green-600 md:border-2 hover:bg-white hover:text-green-600 transition ease-out duration-500" 
-                        onclick="avviaOrdineTotlale()"
-                        >
-                            <i class="fas fa-money-check mr-2"></i>
-                            Procedi all'ordine
-                        </button>
-                    </div>
-                    `
-                )
-            }
-            else
-            {
-                $ ('#areaArticoli').append(
-                    `
-                    <div 
-                    class="w-full flex items-center text-white mt-10"
-                    >
-                        <span>Non hai ancora nessun prodotto nel carrello!</span>
-                        <i class="fas fa-sad-tear ml-3 text-yellow-500 text-3xl"></i>
-                    </div>
-                    `
-                )
-            }
-            
-
-            /* memorizzo in utenteAccesso le informazioni sull'utente che ha eseguito l'accesso */
-            utenteAccesso = Utente.parse(localStorage.getItem('utenteAccesso'))
-
-            /* nasconde le descrizioni dei prodotti */
-            mostraNascondiDescrizione()
-            
-
-            /* Creo un elemento che attiva delle impostazioni avanzati e lo aggiungo solo se l'utente che ha fatto l'accesso è un admin */
-            var opzioniAdmin = `<li class="items-center">
-                                <a
-                                    class="text-blueGray-700 hover:text-blueGray-500 text-xs uppercase py-3 font-bold block cursor-pointer"
-                                    onclick = "aggiungiOpzioniAdmin()"
-                                    id ="opzioniAdmin"
-                                    >
-                                    <i class="fas fa-tools text-blueGray-400 mr-2 text-sm"></i>
-                                    Opzioni
-                                    </a>
-                                </li>`
-            if(utenteAccesso instanceof Amministratore)
-            {
-            $("#ulMenu").append(opzioniAdmin)
-            }
-            else
-            {
-            aggiungiOpzioniUtente()
-            }
-            
-
-            /* Aggiungo il saluto all'utente nella pagina in base all'utenteAccesso */
-            document.getElementById('spanSaluto').innerHTML = utenteAccesso.username
-
-
-            /* Aggiorno il numero massimo disponibile dello spinner di ogni prodotto */
-            $(".spinnerProdotto").each(function()
-            {
-            var nomeProdottoCorrente = this.parentNode.parentNode.children[0].children[0].children[1].innerHTML
-            var disponibilitaProdottoCorrente = magazzino.prodotti[magazzino.trovaIndice(nomeProdottoCorrente)].quantita
-            
-            $(this).attr("max", disponibilitaProdottoCorrente)
-            })
-
-
-
-
-            /* Genero sfumatura al caricamento della pagina */
-            $(function()
-            {
-                $('body').fadeIn(500)
-                
-
-
-
-                setTimeout(function()
-                {
-                  $('body').fadeOut(1000, function()
-                  {
-                    location.reload(true)
-                  })
-                }, 60000)
-            })
-        }
-
-        function aggiungiOpzioniUtente()
-        {
-            $('.utenteAggiungi').append(
-                
-                `
-                <button
-                class="w-full mt-5 btn text-white bg-green-600 md:border-2 hover:bg-white hover:text-green-600 transition ease-out duration-500" 
-                onclick="avviaAcquistoProdottoSingolo(this)"
-                >
-                    <i class="fas fa-money-check mr-2"></i>
-                    Acquista prodotto
-                </button>
-
-                <button
-                class="w-full mt-5 btn text-white bg-red-600 md:border-2 hover:bg-white hover:text-red-600 transition ease-out duration-500" 
-                onclick="rimuovi(this)"
-                >
-                    <i class="fas fa-trash mr-2"></i>
-                    Rimuovi prodotto
-                </button>
-                `
-            )
-        }
-
-        function cambiaQuantita(obj)
-        {
-            var numeroInput = obj.previousElementSibling.value
-            var nomeProdottoCorrente = obj.parentNode.previousElementSibling.children[0].children[1].innerText;
-
-            if(numeroInput > 0)
-            {
-            for(var i = 0 ; i < numeroInput ; i++)
-            {
-                magazzino.incrementaQuantita(nomeProdottoCorrente)
-            }
-            }
-            else
-            {
-            if(Math.abs(numeroInput) <= magazzino.prodotti[magazzino.trovaIndice(nomeProdottoCorrente)].quantita)
-            {
-                for(var i = 0 ; i < Math.abs(numeroInput) ; i++)
-                {
-                magazzino.decrementaQuantita(nomeProdottoCorrente)
-                }
-            }
-            else
-            {
-                console.error("stai cercando di togliere troppi pezzi")
-                alert("stai cercando di togliere troppi pezzi")
-                obj.previousElementSibling.value = null
-                return -1
-            }
-            }
-
-            
-            /* apporto la modifica al file con php con le informzioni sul magazzino */
-                    $.ajax({
-                        data: {"content" : magazzino.stringify()}, 
-                        url: "php/aggiornaMagazzino.php",
-                        type: "POST",
-                        success: function(data){
-                            console.log(data)
-                            console.log("Aggiornamento file riuscito")            
-                        }
-                    })
-
-            
-            if(confirm("Hai appena apportato delle modifiche al magazzino. Vuoi ricaricare la pagina per visualizzarle?"))
-            {
-                window.location = "shop.html"
-            }
-            
-        }
-
-        function disconnetti()
-        {
-            localStorage.removeItem('utenteAccesso')
-
-            if(confirm("Stai per disconetterti. Continuare?"))
-            {
-            window.location = "index.html"
-            }
-        }
-
-        function rimuovi(obj)
-        {
-            let nomeProdottoCorrente = obj.parentNode.parentNode.children[0].children[0].children[1].innerText;
-            let quantitaProdottoCorrente = utenteAccesso.carrello.arrayProdotti[utenteAccesso.carrello.trovaIndice(nomeProdottoCorrente)].quantita
-            
-            utenteAccesso.carrello.eliminaProdotto(nomeProdottoCorrente, quantitaProdottoCorrente, magazzino)
-            
-            /* Salvo le modifiche sui database */
-            localStorage.setItem('utenteAccesso', utenteAccesso.stringify())
-
-
-            var utenti = JSON.parse(utentiJSON)
-            utenti = utenti.map((item) => 
-            {
-                return Utente.parse(item)
-            })
-            utenti = utenti.map(function(item, i)
-            {
-                if(item.username == utenteAccesso.username)
-                {
-                    return utenteAccesso
-                }
-                else
-                {
-                    return item
-                }
-            })
-            utenti = utenti.map(function(item, i)
-            {
-                return item.stringify()
-            })
-            $.ajax({
-                data: {"content" : JSON.stringify(utenti)}, 
-                url: "php/aggiornaListaUtenti.php",
-                type: "POST",
-                success: function(data){
-                    console.log("modifica file eseguita")
-                }
-            })
-            $.ajax({
-                data: {"content" : magazzino.stringify()}, 
-                url: "php/aggiornaMagazzino.php",
-                type: "POST",
-                success: function(data){
-                    console.log("modifica file eseguita")
-                }
-            })
-
-
-
-
-            if(confirm("Hai appena apportato delle modifiche al tuo carrello. Vuoi ricaricare la pagina per visualizzarle?"))
-            {
-                window.location = "carrello.html"
-            }
-
-        }
-   
-        function avviaAcquistoProdottoSingolo(obj)
-        {
-          var nomeProdottoCorrente = obj.parentNode.parentNode.children[0].children[0].children[1].innerText;
-          if(controllaPresenzaInformazioni())
-          {
-            var indiceCarrelloProdotto = utenteAccesso.carrello.trovaIndice(nomeProdottoCorrente)
-            var arrayProdotti = [utenteAccesso.carrello.arrayProdotti[indiceCarrelloProdotto]]
-            var numeroFattura = JSON.parse(ordiniJSON).length + 1
-            
-          
-            
-            var ordine = new Ordine(arrayProdotti, new Date(), utenteAccesso, numeroFattura)
-            
-            localStorage.setItem('ordine', ordine.stringify())
-
-            /*Rimuovo l'articolo acquistato dal carrello e lo metto nel vettore cronologiaAcquis*/
-            utenteAccesso.carrello.cronologiaAcquisti.push(indiceCarrelloProdotto)
-            utenteAccesso.carrello.arrayProdotti.splice(indiceCarrelloProdotto, 1)
-            
-            window.location = "fattura.html"
-          }
-          else
-          {
-            $('#informazioniCliente').toggle()
-            $('#prodottiPagina').hide()
-            window.scrollTo(0,140)
-          }
-        }
-
-        function avviaOrdineTotlale()
-        {
-          if(controllaPresenzaInformazioni())
-          {
-            var arrayProdotti = utenteAccesso.carrello.arrayProdotti
-            var numeroFattura = JSON.parse(ordiniJSON).length + 1 
-            
-            var ordine = new Ordine(arrayProdotti, new Date(), utenteAccesso, numeroFattura)
-            
-            localStorage.setItem('ordine', ordine.stringify())
-            
-            utenteAccesso.carrello.arrayProdotti.forEach(function(item, i)
-            {
-              utenteAccesso.carrello.cronologiaAcquisti.push(item)
-            })
-
-            utenteAccesso.carrello.arrayProdotti = []
-            
-
-            window.location = "fattura.html"
-          }
-          else
-          {
-            $('#informazioniCliente').toggle()
-            $('#prodottiPagina').hide()
-            window.scrollTo(0,140)
-          }
-        }
-
-
-
-        function chiudiAcquistoProdotto()
-        {
-          $('#informazioniCliente').toggle()
-            $('#prodottiPagina').toggle()
-            window.scrollTo(0,0)
-        }
-
-        function controllaPresenzaInformazioni()
-        {
-          if(utenteAccesso.nomeAzienda == "")
-          {
-            return false
-          }
-          else
-          {
-            return true
-          }
-        }
-
-        function checkAzienda()
-        {
-          var nomeAziendaCliente = document.formInformazioniAzienda.nomeAzienda.value
-          var indirizzoAziendaCliente = document.formInformazioniAzienda.indirizzoAzienda.value
-          var partitaIVAAziendaCliente = document.formInformazioniAzienda.partitaIva.value
-          var codiceFiscaleCliente = document.formInformazioniAzienda.codiceFiscale.value
-
-
-          utenteAccesso.nomeAzienda = nomeAziendaCliente
-          utenteAccesso.indirizzoAzienda = indirizzoAziendaCliente
-          utenteAccesso.partitaIva = partitaIVAAziendaCliente
-          utenteAccesso.codiceFiscale = codiceFiscaleCliente
-
-          console.log(nomeAziendaCliente)
-
-          localStorage.setItem('utenteAccesso', utenteAccesso.stringify())
-          
-          /* leggo l'oggetto che contiene tutti gli utenti */
-          var utenti = JSON.parse(utentiJSON)
-          utenti = utenti.map((item) => 
-          {
-            return Utente.parse(item)
-          })
-
-          utenti = utenti.map(function(item, i)
-          {
-            if(item.username == utenteAccesso.username)
-            {
-              return utenteAccesso
-            }
-            else
-            {
-              return item
-            }
-          })
-
-          console.log(utenti)
-
-          utenti = utenti.map(function(item, i)
-          {
-            return item.stringify()
-          })
-          
-          $.ajax({
-            data: {"content" : JSON.stringify(utenti)}, 
-            url: "php/aggiornaListaUtenti.php",
-            type: "POST",
-            success: function(data){
-              console.log("Modifica eseguita con successo!")
-            }
-          })
-
-          if(confirm("Hai appena apportato delle modifiche al tuo profilo. Vuoi ricaricare per visualizzarlo?"))
-          {
-            window.location = "carrello.html"
-          }
-          
-        }
-        
-  </script>
+    <script src="script/carrelloShopScriptFunzionale.js"></script>
+    <script src="script/carrelloScriptFunzionale.js"></script>
   </head>
   <body class="text-blueGray-700 antialiased" style="display: none;">
 
@@ -500,7 +118,7 @@
 
 
                 <a
-                  href="#pablo"
+                  href="informazioni.html"
                   class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
                 >
                   <i class="fas fa-info-circle"></i>
@@ -614,7 +232,7 @@
               class="transform hover:scale-125 hover:bg-opacity-100 transition ease-out duration-300">
           
             </a>
-            <form
+            <div
               class="md:flex hidden flex-row flex-wrap items-center lg:ml-auto mr-3"
             >
               <div class="relative flex w-full flex-wrap items-stretch hover:shadow-inner transform hover:scale-105 hover:bg-opacity-100 transition ease-out duration-300">
@@ -623,12 +241,13 @@
                   ><i class="fas fa-search"></i
                 ></span>
                 <input
-                  type="text"
-                  placeholder="Search here..."
-                  class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white bg-white rounded text-sm shadow outline-none focus:outline-none focus:ring w-full pl-10"
+                id="casellaRicerca"
+                type="search"
+                placeholder="Cerca prodotto..."
+                class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white bg-white rounded text-sm shadow outline-none focus:outline-none focus:ring w-full pl-10"
                 />
               </div>
-            </form>
+            </div>
             <ul
               class="flex-col md:flex-row list-none items-center hidden md:flex"
             >
@@ -663,7 +282,7 @@
 
 
                 <a
-                  href="#pablo"
+                  href="informazioni.html"
                   class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
                 >
                   <i class="fas fa-info-circle"></i>
@@ -698,7 +317,7 @@
           
 
 
-            <div class="px-4 md:px-10 mx-auto w-full" id="prodottiPagina">
+          <div class="px-4 md:px-10 mx-auto w-full" id="prodottiPagina">
                 <div>
                     
                     <!-- I prodotti qui -->
@@ -759,7 +378,7 @@
                     
                     
                     onclick="chiudiAcquistoProdotto()">
-                      <i class="fas fa-x">×</i>
+                      <span>✘</span>
                     </div>
                   </div>
   
